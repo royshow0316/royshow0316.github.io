@@ -6,8 +6,8 @@
 </description>
     <link>http://example.com/</link>
     <atom:link href="http://example.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Thu, 18 Aug 2016 13:56:52 +0800</pubDate>
-    <lastBuildDate>Thu, 18 Aug 2016 13:56:52 +0800</lastBuildDate>
+    <pubDate>Thu, 18 Aug 2016 13:59:16 +0800</pubDate>
+    <lastBuildDate>Thu, 18 Aug 2016 13:59:16 +0800</lastBuildDate>
     <generator>Jekyll v3.2.1</generator>
     
       <item>
@@ -30,6 +30,76 @@
         <pubDate>Thu, 18 Aug 2016 13:49:31 +0800</pubDate>
         <link>http://example.com/jekyll/update/2016/08/18/welcome-to-jekyll.html</link>
         <guid isPermaLink="true">http://example.com/jekyll/update/2016/08/18/welcome-to-jekyll.html</guid>
+        
+        
+        <category>jekyll</category>
+        
+        <category>update</category>
+        
+      </item>
+    
+      <item>
+        <title>ASP.NET WebAPI</title>
+        <description>&lt;p&gt;#ASP.NET WebAPI&lt;/p&gt;
+
+&lt;p&gt;##主要的VS 擴充功能&lt;/p&gt;
+
+&lt;p&gt;Telerik JustCode&lt;/p&gt;
+
+&lt;p&gt;OzCode&lt;/p&gt;
+
+&lt;p&gt;NCrunch&lt;/p&gt;
+
+&lt;p&gt;Unit Test Generator&lt;/p&gt;
+
+&lt;p&gt;##專案使用的第三方套件&lt;/p&gt;
+
+&lt;p&gt;CsvHelper&lt;/p&gt;
+
+&lt;p&gt;Dapper(webapi 可使用)(輕量型ORM)&lt;/p&gt;
+
+&lt;p&gt;GeoJSON.Net&lt;/p&gt;
+
+&lt;p&gt;##監控與紀錄套件&lt;/p&gt;
+
+&lt;p&gt;Elmah&lt;/p&gt;
+
+&lt;p&gt;NLog&lt;/p&gt;
+
+&lt;p&gt;NanoProfiler&lt;/p&gt;
+
+&lt;p&gt;##熱鍵&lt;/p&gt;
+
+&lt;p&gt;偵錯
+ctrl + shift + P&lt;/p&gt;
+
+&lt;p&gt;執行網頁
+Ctrl + F5&lt;/p&gt;
+
+&lt;p&gt;回到上一個地方
+ctrl + -&lt;/p&gt;
+
+&lt;p&gt;隱藏同樣的套件
+File Nesting&lt;/p&gt;
+
+&lt;p&gt;可看到button圖形等
+Glyphfriend&lt;/p&gt;
+
+&lt;p&gt;jQuery Code ….套件&lt;/p&gt;
+
+&lt;p&gt;///summary
+ctrl + shift + d&lt;/p&gt;
+
+&lt;p&gt;只要寫web裝就對了
+Web Essentials&lt;/p&gt;
+
+&lt;p&gt;偵錯套件
+OzCode&lt;/p&gt;
+
+</description>
+        <pubDate>Thu, 18 Aug 2016 13:49:31 +0800</pubDate>
+        <link>http://example.com/jekyll/update/2016/08/18/ASP.NET-WebAPI.html</link>
+        <guid isPermaLink="true">http://example.com/jekyll/update/2016/08/18/ASP.NET-WebAPI.html</guid>
         
         
         <category>jekyll</category>
