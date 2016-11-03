@@ -1,15 +1,11 @@
 ---
 layout: default
+title: 文章列表
 ---
 
 <div class="home">
-  <div style="position:absolute;left:0";>
-    <script type="text/javascript" src="//js1.bloggerads.net/ShowAds.aspx?blogid=20161103000005"></script>
-  </div>
-  <div style="position:absolute;right:0";>
-    <script type="text/javascript" src="//js1.bloggerads.net/ShowAds.aspx?blogid=20161103000005"></script>
-  </div>
-  <h1 class="page-heading">Posts</h1>
+  
+  <h2>文章列表</h2>
 
   <ul class="post-list">
     {% for post in site.posts %}
@@ -23,6 +19,6 @@ layout: default
     {% endfor %}
   </ul>
 
-  <p class="rss-subscribe">subscribe <a href="{{ "/feed.xml" | prepend: site.baseurl }}">via RSS</a></p>
+  <p class="rss-subscribe">訂閱 <a href="{{ "/feed.xml" | prepend: site.baseurl }}">via RSS</a></p>
  
 </div>
