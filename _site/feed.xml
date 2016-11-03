@@ -6,8 +6,8 @@
 </description>
     <link>http://example.com/</link>
     <atom:link href="http://example.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Thu, 03 Nov 2016 12:49:02 +0800</pubDate>
-    <lastBuildDate>Thu, 03 Nov 2016 12:49:02 +0800</lastBuildDate>
+    <pubDate>Thu, 03 Nov 2016 14:11:37 +0800</pubDate>
+    <lastBuildDate>Thu, 03 Nov 2016 14:11:37 +0800</lastBuildDate>
     <generator>Jekyll v3.2.1</generator>
     
       <item>
@@ -241,7 +241,7 @@ RxJava有一個很棒的優點，假設你要照順序的做處理，用RxJava�
 &lt;h2 id=&quot;section-1&quot;&gt;執行結果&lt;/h2&gt;
 &lt;p&gt;&lt;img src=&quot;/image/Gson/Result.png&quot; alt=&quot;Result&quot; class=&quot;img-responsive&quot; height=&quot;500px&quot; width=&quot;300px&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;a href=&quot;https://github.com/royshow0316/NavigationDrawerTreeView&quot; target=&quot;_blank&quot;&gt;程式碼已放上Github&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://github.com/royshow0316/GsonTest&quot; target=&quot;_blank&quot;&gt;程式碼已放上Github&lt;/a&gt;&lt;/p&gt;
 
 </description>
         <pubDate>Mon, 31 Oct 2016 13:49:31 +0800</pubDate>
