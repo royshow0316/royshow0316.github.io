@@ -208,7 +208,7 @@ public void init() {
             @Override
             public void call(Subscriber<? super ProjectViewModel> subscriber) {
                 try {
-                    Request request = new Request.Builder().url("http://60.250.132.191/IETM2016/Json/ProjectJson").build();
+                    Request request = new Request.Builder().url("你的JSON Url").build();
                     Response projectResponse = client.newCall(request).execute();
                     ProjectResponse tmpProjectResponse = new Gson().fromJson(projectResponse.body().string(), ProjectResponse.class);
 
