@@ -1,0 +1,43 @@
+<footer class="site-footer">
+
+  <div class="wrapper">
+
+    <!--<h2 class="footer-heading">{{ site.title | escape }}</h2>-->
+    <p></p>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1" align="center">
+        <ul class="contact-list">
+          <!-- <li>{{ site.title | escape }}</li> -->
+          <li>聯絡我</li>
+          <li><a href="mailto:{{ site.email }}">{{ site.email }}</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-2" align="center">
+        <ul class="social-media-list">
+          {% if site.github_username %}
+          <li>
+            {% include icon-github.html username=site.github_username %}
+          </li>
+          {% endif %}
+
+          {% if site.twitter_username %}
+          <li>
+            {% include icon-twitter.html username=site.twitter_username %}
+          </li>
+          {% endif %}
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3" align="center">
+        <!-- <p>{{ site.description | escape }}</p> -->
+        <p>Powered by <a href="https://jekyllrb.com/" target="_blank">Jekyll</a>
+        ,  Hosted by <a href="https://github.com/" target="_blank">Github</a>
+        </p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>

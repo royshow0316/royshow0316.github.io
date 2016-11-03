@@ -1,0 +1,41 @@
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>
+    八蛋的程式派對 | {% if page.title %}{{ page.title | escape }}{% else %}{{ site.title | escape }}{% endif %}
+  </title>
+  <meta name="description" content="{{ page.excerpt | default: site.description | strip_html | normalize_whitespace | truncate: 160 | escape }}">
+
+  <link rel="stylesheet" href="{{ "/css/main.css" | prepend: site.baseurl }}">
+  <link rel="canonical" href="{{ page.url | replace:'index.html','' | prepend: site.baseurl | prepend: site.url }}">
+  <link rel="alternate" type="application/rss+xml" title="{{ site.title | escape }}" href="{{ "/feed.xml" | prepend: site.baseurl | prepend: site.url }}">
+
+  <style>
+    @media screen and (min-width:600px) {
+      body {
+        width: 90%;
+        margin-left: 5%;
+      }
+    }
+    @media screen and (min-width:900px) {
+      body {
+        width: 80%;
+        margin-left: 10%;
+      }
+    }
+    @media screen and (min-width:1200px) {
+      body {
+        width: 70%;
+        margin-left: 15%;
+      }
+    }
+    @media screen and (min-width:1500px) {
+      body {
+        width: 60%;
+        margin-left: 20%;
+      }
+    }
+  </style>
+</head>
