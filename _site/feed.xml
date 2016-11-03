@@ -1,18 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Royshow 部落格</title>
+    <title>Royshow 程式學習筆記</title>
     <description>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.
 </description>
-    <link>http://example.com/</link>
-    <atom:link href="http://example.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Thu, 03 Nov 2016 14:40:11 +0800</pubDate>
-    <lastBuildDate>Thu, 03 Nov 2016 14:40:11 +0800</lastBuildDate>
+    <link>http://royshow.github.io//</link>
+    <atom:link href="http://royshow.github.io//feed.xml" rel="self" type="application/rss+xml"/>
+    <pubDate>Thu, 03 Nov 2016 15:41:09 +0800</pubDate>
+    <lastBuildDate>Thu, 03 Nov 2016 15:41:09 +0800</lastBuildDate>
     <generator>Jekyll v3.2.1</generator>
     
       <item>
         <title>使用okHttp讀取JSON資料並用RxJava框架解析JSON格式資料成Gson</title>
-        <description>&lt;h2 id=&quot;section&quot;&gt;介紹&lt;/h2&gt;
+        <description>&lt;script type=&quot;text/javascript&quot; src=&quot;//js1.bloggerads.net/ShowAds.aspx?blogid=20161103000005&quot;&gt;&lt;/script&gt;
+
+&lt;h2 id=&quot;section&quot;&gt;介紹&lt;/h2&gt;
 &lt;p&gt;什麼是JSON?，JSON的全名是JavaScript Object Notation，用途是資料交換。之前會使用XML來做資料交換，可是當資料量很多時，XML檔會變很肥大，而JSON是輕量級的資料交換格式。物件是以左大括號 { 開始，右大括號 } 結束。並以key:value的方式來儲存資料，多組的話則以逗號分開，看起來如下&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-json&quot; data-lang=&quot;json&quot;&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
@@ -245,8 +247,8 @@ RxJava有一個很棒的優點，假設你要照順序的做處理，用RxJava�
 
 </description>
         <pubDate>Mon, 31 Oct 2016 13:49:31 +0800</pubDate>
-        <link>http://example.com/jekyll/update/2016/10/31/Gson.html</link>
-        <guid isPermaLink="true">http://example.com/jekyll/update/2016/10/31/Gson.html</guid>
+        <link>http://royshow.github.io//jekyll/update/2016/10/31/Gson.html</link>
+        <guid isPermaLink="true">http://royshow.github.io//jekyll/update/2016/10/31/Gson.html</guid>
         
         
         <category>jekyll</category>
@@ -801,8 +803,8 @@ TreeView是一種在Windows常見的多層清單表示方式，而在Android中�
 
 </description>
         <pubDate>Mon, 29 Aug 2016 13:49:31 +0800</pubDate>
-        <link>http://example.com/jekyll/update/2016/08/29/NavigationDrawerTreeView.html</link>
-        <guid isPermaLink="true">http://example.com/jekyll/update/2016/08/29/NavigationDrawerTreeView.html</guid>
+        <link>http://royshow.github.io//jekyll/update/2016/08/29/NavigationDrawerTreeView.html</link>
+        <guid isPermaLink="true">http://royshow.github.io//jekyll/update/2016/08/29/NavigationDrawerTreeView.html</guid>
         
         
         <category>jekyll</category>
