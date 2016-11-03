@@ -6,8 +6,8 @@
 </description>
     <link>http://royshow.github.io//</link>
     <atom:link href="http://royshow.github.io//feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Thu, 03 Nov 2016 16:08:21 +0800</pubDate>
-    <lastBuildDate>Thu, 03 Nov 2016 16:08:21 +0800</lastBuildDate>
+    <pubDate>Thu, 03 Nov 2016 16:16:49 +0800</pubDate>
+    <lastBuildDate>Thu, 03 Nov 2016 16:16:49 +0800</lastBuildDate>
     <generator>Jekyll v3.2.1</generator>
     
       <item>
@@ -245,13 +245,11 @@ RxJava有一個很棒的優點，假設你要照順序的做處理，用RxJava�
 
 </description>
         <pubDate>Mon, 31 Oct 2016 13:49:31 +0800</pubDate>
-        <link>http://royshow.github.io//jekyll/update/2016/10/31/Gson.html</link>
-        <guid isPermaLink="true">http://royshow.github.io//jekyll/update/2016/10/31/Gson.html</guid>
+        <link>http://royshow.github.io//android/2016/10/31/Gson.html</link>
+        <guid isPermaLink="true">http://royshow.github.io//android/2016/10/31/Gson.html</guid>
         
         
-        <category>jekyll</category>
-        
-        <category>update</category>
+        <category>Android</category>
         
       </item>
     
@@ -801,13 +799,11 @@ TreeView是一種在Windows常見的多層清單表示方式，而在Android中�
 
 </description>
         <pubDate>Mon, 29 Aug 2016 13:49:31 +0800</pubDate>
-        <link>http://royshow.github.io//jekyll/update/2016/08/29/NavigationDrawerTreeView.html</link>
-        <guid isPermaLink="true">http://royshow.github.io//jekyll/update/2016/08/29/NavigationDrawerTreeView.html</guid>
+        <link>http://royshow.github.io//android/2016/08/29/NavigationDrawerTreeView.html</link>
+        <guid isPermaLink="true">http://royshow.github.io//android/2016/08/29/NavigationDrawerTreeView.html</guid>
         
         
-        <category>jekyll</category>
-        
-        <category>update</category>
+        <category>Android</category>
         
       </item>
     

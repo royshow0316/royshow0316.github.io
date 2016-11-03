@@ -2,7 +2,7 @@
 layout: post
 title:  "側邊欄NavigationDrawer+多層TreeView之實現"
 date:   2016-08-29 13:49:31 +0800
-categories: jekyll update
+categories: Android
 ---
 ## 介紹
 Navigation Drawer通常是從左邊邊緣拉出來的一個選單，是現在很常看到的UI元件。Google有提供此功能，這裡將使用Google提供的功能，來做到此效果，需用到DrawerLayout和NavigationView。DrawerLayout的功能是用來做從左到右拉出來的效果，NavigationView則是用來在拉出來的畫面上顯示資料和選單。
