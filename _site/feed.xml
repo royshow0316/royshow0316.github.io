@@ -6,8 +6,8 @@
 </description>
     <link>http://royshow.github.io//</link>
     <atom:link href="http://royshow.github.io//feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sat, 19 Nov 2016 14:54:38 +0800</pubDate>
-    <lastBuildDate>Sat, 19 Nov 2016 14:54:38 +0800</lastBuildDate>
+    <pubDate>Sat, 19 Nov 2016 15:24:13 +0800</pubDate>
+    <lastBuildDate>Sat, 19 Nov 2016 15:24:13 +0800</lastBuildDate>
     <generator>Jekyll v3.2.1</generator>
     
       <item>
@@ -112,7 +112,7 @@ RxJava有一個很棒的優點，假設你要照順序的做處理，用RxJava�
         &lt;span class=&quot;o&quot;&gt;});&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;p&gt;可以讀取到JSON的資料，如下圖
-&lt;img src=&quot;/image/Gson/ParseJson.png&quot; alt=&quot;ParseJson&quot; class=&quot;img-responsive&quot; height=&quot;20px&quot; width=&quot;800px&quot; /&gt;&lt;/p&gt;
+&lt;img src=&quot;/image/RxJava/ParseJson.png&quot; alt=&quot;ParseJson&quot; class=&quot;img-responsive&quot; height=&quot;20px&quot; width=&quot;800px&quot; /&gt;&lt;/p&gt;
 
 &lt;h2 id=&quot;javadata&quot;&gt;定義JAVA格式的Data&lt;/h2&gt;
 &lt;p&gt;新增Project.java、ProjectResponse.java和ProjectViewModel.java，定義需要儲存的格式。&lt;/p&gt;
@@ -239,9 +239,9 @@ RxJava有一個很棒的優點，假設你要照順序的做處理，用RxJava�
     &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;h2 id=&quot;section-1&quot;&gt;執行結果&lt;/h2&gt;
-&lt;p&gt;&lt;img src=&quot;/image/Gson/Result.png&quot; alt=&quot;Result&quot; class=&quot;img-responsive&quot; height=&quot;500px&quot; width=&quot;300px&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/image/RxJava/Result.png&quot; alt=&quot;Result&quot; class=&quot;img-responsive&quot; height=&quot;500px&quot; width=&quot;300px&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;a href=&quot;https://github.com/royshow0316/GsonTest&quot; target=&quot;_blank&quot;&gt;程式碼已放上Github&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://github.com/royshow0316/RxJavaTest&quot; target=&quot;_blank&quot;&gt;程式碼已放上Github&lt;/a&gt;&lt;/p&gt;
 
 </description>
         <pubDate>Mon, 31 Oct 2016 13:49:31 +0800</pubDate>
@@ -335,7 +335,7 @@ RxJava有一個很棒的優點，假設你要照順序的做處理，用RxJava�
     &lt;span class=&quot;na&quot;&gt;tools:context=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;com.royshow.gsontest.MainActivity&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
 
     &lt;span class=&quot;nt&quot;&gt;&amp;lt;NumberPicker&lt;/span&gt;
-        &lt;span class=&quot;na&quot;&gt;android:id=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;@+id/showNumProjectPicker&quot;&lt;/span&gt;
+        &lt;span class=&quot;na&quot;&gt;android:id=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;@+id/showNumberPicker&quot;&lt;/span&gt;
         &lt;span class=&quot;na&quot;&gt;android:layout_width=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;200dp&quot;&lt;/span&gt;
         &lt;span class=&quot;na&quot;&gt;android:layout_height=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;wrap_content&quot;&lt;/span&gt;
         &lt;span class=&quot;na&quot;&gt;android:layout_alignParentLeft=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;true&quot;&lt;/span&gt;

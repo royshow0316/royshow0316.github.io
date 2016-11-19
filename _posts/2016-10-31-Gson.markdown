@@ -113,7 +113,7 @@ Request request = new Request.Builder().url("你的JSON Url").build();
 {% endhighlight %}
 
 可以讀取到JSON的資料，如下圖
-![ParseJson](/image/Gson/ParseJson.png){:class="img-responsive" height="20px" width="800px"}
+![ParseJson](/image/RxJava/ParseJson.png){:class="img-responsive" height="20px" width="800px"}
 
 ## 定義JAVA格式的Data
 新增Project.java、ProjectResponse.java和ProjectViewModel.java，定義需要儲存的格式。
@@ -245,11 +245,11 @@ public void init() {
 {% endhighlight %}
 
 ## 執行結果
-![Result](/image/Gson/Result.png){:class="img-responsive" height="500px" width="300px"}
+![Result](/image/RxJava/Result.png){:class="img-responsive" height="500px" width="300px"}
 
 
 
-[程式碼已放上Github](https://github.com/royshow0316/GsonTest){:target='_blank'}
+[程式碼已放上Github](https://github.com/royshow0316/RxJavaTest){:target='_blank'}
 
 [jekyll-docs]: http://jekyllrb.com/docs/home
 [jekyll-gh]:   https://github.com/jekyll/jekyll
