@@ -6,8 +6,8 @@
 </description>
     <link>http://royshow.github.io//</link>
     <atom:link href="http://royshow.github.io//feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sat, 19 Nov 2016 15:24:13 +0800</pubDate>
-    <lastBuildDate>Sat, 19 Nov 2016 15:24:13 +0800</lastBuildDate>
+    <pubDate>Sat, 19 Nov 2016 15:40:34 +0800</pubDate>
+    <lastBuildDate>Sat, 19 Nov 2016 15:40:34 +0800</lastBuildDate>
     <generator>Jekyll v3.2.1</generator>
     
       <item>
@@ -245,8 +245,8 @@ RxJava有一個很棒的優點，假設你要照順序的做處理，用RxJava�
 
 </description>
         <pubDate>Mon, 31 Oct 2016 13:49:31 +0800</pubDate>
-        <link>http://royshow.github.io//android/2016/10/31/Gson.html</link>
-        <guid isPermaLink="true">http://royshow.github.io//android/2016/10/31/Gson.html</guid>
+        <link>http://royshow.github.io//android/2016/10/31/RxJava.html</link>
+        <guid isPermaLink="true">http://royshow.github.io//android/2016/10/31/RxJava.html</guid>
         
         
         <category>Android</category>
