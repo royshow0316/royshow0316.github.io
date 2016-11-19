@@ -6,8 +6,8 @@
 </description>
     <link>http://royshow.github.io//</link>
     <atom:link href="http://royshow.github.io//feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sat, 19 Nov 2016 16:23:57 +0800</pubDate>
-    <lastBuildDate>Sat, 19 Nov 2016 16:23:57 +0800</lastBuildDate>
+    <pubDate>Sat, 19 Nov 2016 16:27:56 +0800</pubDate>
+    <lastBuildDate>Sat, 19 Nov 2016 16:27:56 +0800</lastBuildDate>
     <generator>Jekyll v3.2.1</generator>
     
       <item>
@@ -278,8 +278,8 @@ RxJava有一個很棒的優點，假設你要照順序的做處理，用RxJava�
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-gradle&quot; data-lang=&quot;gradle&quot;&gt;&lt;span class=&quot;n&quot;&gt;compile&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'com.squareup.okhttp3:okhttp:3.4.1'&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
-&lt;p&gt;##權限設定
-在AndroidManifest.xml加入，允許應用程式訪問網路上的信息權限和允許應用程式打開網路，這兩個權限。&lt;/p&gt;
+&lt;h2 id=&quot;section-1&quot;&gt;權限設定&lt;/h2&gt;
+&lt;p&gt;在AndroidManifest.xml加入，允許應用程式訪問網路上的信息權限和允許應用程式打開網路，這兩個權限。&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-xml&quot; data-lang=&quot;xml&quot;&gt;&lt;span class=&quot;nt&quot;&gt;&amp;lt;uses-permission&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;android:name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;android.permission.ACCESS_NETWORK_STATE&quot;&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
 &lt;span class=&quot;nt&quot;&gt;&amp;lt;uses-permission&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;android:name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;android.permission.INTERNET&quot;&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
@@ -305,7 +305,7 @@ RxJava有一個很棒的優點，假設你要照順序的做處理，用RxJava�
             &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
         &lt;span class=&quot;o&quot;&gt;});&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
-&lt;h2 id=&quot;section-1&quot;&gt;執行結果&lt;/h2&gt;
+&lt;h2 id=&quot;section-2&quot;&gt;執行結果&lt;/h2&gt;
 &lt;p&gt;可以讀取到JSON的資料，如下圖
 &lt;img src=&quot;/image/Json/ParseJson.png&quot; alt=&quot;ParseJson&quot; class=&quot;img-responsive&quot; height=&quot;20px&quot; width=&quot;800px&quot; /&gt;&lt;/p&gt;
 

@@ -30,7 +30,7 @@ OkHttp是一個網路的應用程式框架，可快速實作資料交換的動�
 compile 'com.squareup.okhttp3:okhttp:3.4.1'
 {% endhighlight %}
 
-##權限設定
+## 權限設定
 在AndroidManifest.xml加入，允許應用程式訪問網路上的信息權限和允許應用程式打開網路，這兩個權限。
 {% highlight xml %}
 <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
