@@ -2,7 +2,7 @@
 layout: post
 title:  "ASP.NET MVC分層架構(1)-MVC"
 date:   2016-11-07 13:49:31 +0800
-categories: Android
+categories: Asp.Net MVC
 ---
 
 ## 介紹

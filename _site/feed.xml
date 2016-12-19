@@ -6,8 +6,8 @@
 </description>
     <link>http://royshow.github.io//</link>
     <atom:link href="http://royshow.github.io//feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 19 Dec 2016 18:32:48 +0800</pubDate>
-    <lastBuildDate>Mon, 19 Dec 2016 18:32:48 +0800</lastBuildDate>
+    <pubDate>Mon, 19 Dec 2016 18:42:26 +0800</pubDate>
+    <lastBuildDate>Mon, 19 Dec 2016 18:42:26 +0800</lastBuildDate>
     <generator>Jekyll v3.2.1</generator>
     
       <item>
@@ -112,11 +112,13 @@
 
 </description>
         <pubDate>Mon, 14 Nov 2016 13:49:31 +0800</pubDate>
-        <link>http://royshow.github.io//android/2016/11/14/ASP.NET_MVC_CodeFirst.html</link>
-        <guid isPermaLink="true">http://royshow.github.io//android/2016/11/14/ASP.NET_MVC_CodeFirst.html</guid>
+        <link>http://royshow.github.io//asp.net/mvc/2016/11/14/ASP.NET_MVC_CodeFirst.html</link>
+        <guid isPermaLink="true">http://royshow.github.io//asp.net/mvc/2016/11/14/ASP.NET_MVC_CodeFirst.html</guid>
         
         
-        <category>Android</category>
+        <category>Asp.Net</category>
+        
+        <category>MVC</category>
         
       </item>
     
@@ -171,11 +173,13 @@ Controller的資料夾呈現如下：&lt;br /&gt;
 
 </description>
         <pubDate>Mon, 07 Nov 2016 13:49:31 +0800</pubDate>
-        <link>http://royshow.github.io//android/2016/11/07/ASP.NET_MVC%E5%88%86%E5%B1%A4%E6%9E%B6%E6%A7%8B(1)-MVC.html</link>
-        <guid isPermaLink="true">http://royshow.github.io//android/2016/11/07/ASP.NET_MVC%E5%88%86%E5%B1%A4%E6%9E%B6%E6%A7%8B(1)-MVC.html</guid>
+        <link>http://royshow.github.io//asp.net/mvc/2016/11/07/ASP.NET_MVC%E5%88%86%E5%B1%A4%E6%9E%B6%E6%A7%8B(1)-MVC.html</link>
+        <guid isPermaLink="true">http://royshow.github.io//asp.net/mvc/2016/11/07/ASP.NET_MVC%E5%88%86%E5%B1%A4%E6%9E%B6%E6%A7%8B(1)-MVC.html</guid>
         
         
-        <category>Android</category>
+        <category>Asp.Net</category>
+        
+        <category>MVC</category>
         
       </item>
     
