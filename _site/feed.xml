@@ -6,8 +6,8 @@
 </description>
     <link>http://royshow.github.io//</link>
     <atom:link href="http://royshow.github.io//feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 19 Dec 2016 18:53:30 +0800</pubDate>
-    <lastBuildDate>Mon, 19 Dec 2016 18:53:30 +0800</lastBuildDate>
+    <pubDate>Mon, 19 Dec 2016 19:00:33 +0800</pubDate>
+    <lastBuildDate>Mon, 19 Dec 2016 19:00:33 +0800</lastBuildDate>
     <generator>Jekyll v3.2.1</generator>
     
       <item>
@@ -163,7 +163,7 @@ Controller的資料夾呈現如下：&lt;br /&gt;
 2.Model -&amp;gt; Respository -&amp;gt; Controller -&amp;gt; View&lt;br /&gt;
 3.Model -&amp;gt; Respository -&amp;gt; Service -&amp;gt; Controller -&amp;gt; View&lt;br /&gt;
 4.IOC/DI/AutoMapper/Unit Test/Integration Test &lt;br /&gt;
-一開始先以1.MVC的方式開發，在之後慢慢加入其他的分層方式，可以從中體會分層的好處，我的話，目前對於測試的部分，都還沒引入到專案中，也就是Unit Test和Integration Test，其他的都已加入到專案中。&lt;/p&gt;
+一開始先以1.MVC的方式開發，在之後慢慢加入其他的分層方式，可以從中體會分層的好處；我目前對於測試的部分，都還沒引入到專案中，也就是Unit Test和Integration Test，其他的都已加入到專案中使用。&lt;/p&gt;
 
 &lt;p&gt;在下一篇我們將加入Respository到專案。&lt;/p&gt;
 
