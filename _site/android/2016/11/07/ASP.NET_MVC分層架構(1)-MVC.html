@@ -7,12 +7,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>
-    八蛋的程式派對 | 文章列表
+    八蛋的程式派對 | ASP.NET MVC分層架構(1)-MVC
   </title>
-  <meta name="description" content="Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search resu...">
+  <meta name="description" content="介紹 什麼是MVC?，MVC是一種”設計模式”，不是程式語言也不是一種框架。把應用程式架構區分為三個部分，分別為Model(模型)、View(視圖)和Controller(控制器)。">
 
   <link rel="stylesheet" href="/css/main.css">
-  <link rel="canonical" href="http://royshow.github.io//">
+  <link rel="canonical" href="http://royshow.github.io//android/2016/11/07/ASP.NET_MVC%E5%88%86%E5%B1%A4%E6%9E%B6%E6%A7%8B(1)-MVC.html">
   <link rel="alternate" type="application/rss+xml" title="八蛋的程式派對" href="http://royshow.github.io//feed.xml">
 
   <style>
@@ -94,65 +94,79 @@
 </header>
       <main class="page-content" aria-label="Content">
           <div class="wrapper">
-            <div class="home">
-  
-  <h2>文章列表</h2>
+            <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
 
-  <ul class="post-list">
-    
-      <li>
-        <span class="post-meta">Nov 14, 2016</span>
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">ASP.NET MVC分層架構(1)-MVC</h1>
+    <p class="post-meta">
+      <time datetime="2016-11-07T13:49:31+08:00" itemprop="datePublished">
+        Nov 7, 2016
+      </time>
+      &nbsp;
+      <span class="categories">類別:
+        
+        <a href="/categories/#Android" title="Android">Android</a>&nbsp;
+        </span>
+      
+      &nbsp;
+      <span class="tags">標籤:
+        </span>
+      
+    </p>
+  </header>
 
-        <h2>
-          <a class="post-link" href="/android/2016/11/14/ASP.NET_MVC_CodeFirst.html">ASP.NET MVC-CodeFirst</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Nov 7, 2016</span>
+  <div class="post-content" itemprop="articleBody">
+    <h2 id="section">介紹</h2>
+<p>什麼是MVC?，MVC是一種”設計模式”，不是程式語言也不是一種框架。把應用程式架構區分為三個部分，分別為Model(模型)、View(視圖)和Controller(控制器)。</p>
 
-        <h2>
-          <a class="post-link" href="/android/2016/11/07/ASP.NET_MVC%E5%88%86%E5%B1%A4%E6%9E%B6%E6%A7%8B(1)-MVC.html">ASP.NET MVC分層架構(1)-MVC</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Oct 31, 2016</span>
+<h2 id="section-1">建立專案</h2>
+<p>建立專案時，在Visual C#選擇Web，然後選擇ASP.NET Web應用程式，如下圖：<br />
+<img src="/image/ASP.NET_MVC(1)_MVC/Creat_Project.png" alt="Creat_Project" class="img-responsive" height="800px" width="600px" /></p>
 
-        <h2>
-          <a class="post-link" href="/android/2016/10/31/RxJava.html">使用okHttp讀取JSON資料並用RxJava框架解析JSON格式資料成Gson</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Sep 12, 2016</span>
+<p>再來要選取範本，在這裡我們選取MVC，如下圖：<br />
+<img src="/image/ASP.NET_MVC(1)_MVC/Create_ProjectMVC.png" alt="Create_ProjectMVC" class="img-responsive" height="800px" width="600px" /></p>
 
-        <h2>
-          <a class="post-link" href="/android/2016/09/12/Json.html">使用okHttp讀取JSON資料</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Sep 5, 2016</span>
+<h2 id="model">Model</h2>
+<p>“資料模型”用於封裝與應用程序的業務邏輯相關的數據以及對數據的處理方法。
+有關於資料處理的範圍都可屬於Model，例如：資料庫的存取操作(讀取、寫入)、資料結構的定義和資料格式的驗證…等。Model的資料夾呈現如下：<br />
+<img src="/image/ASP.NET_MVC(1)_MVC/Model.png" alt="Model" class="img-responsive" height="600px" width="400px" /></p>
 
-        <h2>
-          <a class="post-link" href="/android/2016/09/05/NumberPicker.html">將NumberPicker放入字串</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Aug 29, 2016</span>
+<h2 id="view">View</h2>
+<p>在頁面上顯示或是經由頁面傳回後端都是View所負責，View的呈現分為輸出和輸入，輸出：把資料輸出並顯示到使用者介面上，輸入：把使用者所輸入的資料傳回到伺服器端。
+有關於View的技術包含：
+1.Html/CSS
+2.JavaScript(JQuery, MoonTool, …etc)
+3.JSON / XML
+4.AJAX
+View的資料夾呈現如下：<br />
+<img src="/image/ASP.NET_MVC(1)_MVC/View.png" alt="View" class="img-responsive" height="600px" width="400px" /></p>
 
-        <h2>
-          <a class="post-link" href="/android/2016/08/29/NavigationDrawerTreeView.html">側邊欄NavigationDrawer+多層TreeView之實現</a>
-        </h2>
-      </li>
-    
-  </ul>
+<h2 id="controller">Controller</h2>
+<p>控制整個系統的業務流程；以及依據制定好的規則進行對資料處理以及View的使用。
+控制器接受外部傳入的資料並與Model進行資料處理，最後再由View回應外部的傳入並做顯示。
+Controller的資料夾呈現如下：<br />
+<img src="/image/ASP.NET_MVC(1)_MVC/Controller.png" alt="Controller" class="img-responsive" height="600px" width="400px" /></p>
 
-  <p class="rss-subscribe">訂閱 <a href="/feed.xml">via RSS</a></p>
- 
-</div>
+<h2 id="viewmodel">ViewModel</h2>
+<p>顧名思義就是針對某些View的需求而產生的Model，專給View所用，通常一個ViewModel只給一個View使用。
+通常會建立一個ViewModels的目錄來存放與管理。</p>
+
+<h2 id="section-2">開發方法</h2>
+<p>透過MVC分階段開發，如下：<br />
+1.Model -&gt; Controller -&gt; View<br />
+2.Model -&gt; Respository -&gt; Controller -&gt; View<br />
+3.Model -&gt; Respository -&gt; Service -&gt; Controller -&gt; View<br />
+4.IOC/DI/AutoMapper/Unit Test/Integration Test <br />
+一開始先以1.MVC的方式開發，在之後慢慢加入其他的分層方式，可以從中體會分層的好處，我的話，目前對於測試的部分，都還沒引入到專案中，也就是Unit Test和Integration Test，其他的都已加入到專案中。</p>
+
+<p>在下一篇我們將加入Respository到專案。</p>
+
+<p><a href="https://github.com/royshow0316/MVC1" target="_blank">程式碼已放上Github</a></p>
+
+
+  </div>
+
+</article>
 
           </div>
       </main>

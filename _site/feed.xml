@@ -6,9 +6,178 @@
 </description>
     <link>http://royshow.github.io//</link>
     <atom:link href="http://royshow.github.io//feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sat, 19 Nov 2016 16:34:01 +0800</pubDate>
-    <lastBuildDate>Sat, 19 Nov 2016 16:34:01 +0800</lastBuildDate>
+    <pubDate>Mon, 19 Dec 2016 18:32:48 +0800</pubDate>
+    <lastBuildDate>Mon, 19 Dec 2016 18:32:48 +0800</lastBuildDate>
     <generator>Jekyll v3.2.1</generator>
+    
+      <item>
+        <title>ASP.NET MVC-CodeFirst</title>
+        <description>&lt;h2 id=&quot;section&quot;&gt;介紹&lt;/h2&gt;
+&lt;p&gt;“CodeFirst”是Entity Framework三種建置方法中的一種，其他兩種分別是”Database First”和”Model First”，而”Database First”是最多人使用在專案上的方式，至於”Model First”就比較少人採用這種方式。
+我們在開發專案的時候，先定義好系統內所使用的類別，而Entity Framework Code First會依照程式裡類別的定義在指定資料庫表格及欄位，這樣程式開發人員只需要專注在系統的開發，而不需要花時間先在資料庫裡建表格及欄位。而因為需求變更而要修改類別時，使用Code First只需要變更屬性設定，接著下指令後就會去修改資料庫裡的表格欄位，Code First的好處是對程式開發人員提供了比較多的彈性與操作。
+這裡並不是說Database First不好，Code First和Database First各有各的優點，如果開發人員可以控管專案所使用的資料庫時，在開發時就可以考慮使用Code First；如果開發人員沒有資料庫比較高的權限時，使用Database First會比較恰當。&lt;/p&gt;
+
+&lt;h2 id=&quot;sql-server&quot;&gt;加入SQL Server資料庫&lt;/h2&gt;
+&lt;p&gt;在專案理的App_Data目錄裡加入SQL Server資料庫，在此利用LocalDB來實作。&lt;br /&gt;
+&lt;img src=&quot;/image/ASP.NET_MVC_CodeFirst/SQLServer.png&quot; alt=&quot;SQLServer&quot; class=&quot;img-responsive&quot; height=&quot;800px&quot; width=&quot;600px&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/image/ASP.NET_MVC_CodeFirst/mdf.png&quot; alt=&quot;mdf&quot; class=&quot;img-responsive&quot; height=&quot;600px&quot; width=&quot;300px&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;section-1&quot;&gt;設定連線字串&lt;/h2&gt;
+&lt;p&gt;開啟根目錄下的Web.Config檔案，加入資料庫連接字串。&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-xml&quot; data-lang=&quot;xml&quot;&gt;&lt;span class=&quot;nt&quot;&gt;&amp;lt;connectionStrings&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;add&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;DefaultConnection&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;connectionString=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Data Source=(LocalDb)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\Sample.mdf;Initial Catalog=Sample;Integrated Security=True&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;providerName=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;System.Data.SqlClient&quot;&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;/connectionStrings&amp;gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;h2 id=&quot;section-2&quot;&gt;建立資料表&lt;/h2&gt;
+&lt;p&gt;在Models目錄下建立Project.cs和Structure.cs。&lt;br /&gt;
+&lt;img src=&quot;/image/ASP.NET_MVC_CodeFirst/DataClass.png&quot; alt=&quot;DataClass&quot; class=&quot;img-responsive&quot; height=&quot;600px&quot; width=&quot;300px&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Project.cs&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c#&quot; data-lang=&quot;c#&quot;&gt;&lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Project&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Key&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Required&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Guid&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Id&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;set&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+        &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Name&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;set&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+        
+        &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;virtual&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ICollection&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Structure&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Structure&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;set&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Structure.cs&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c#&quot; data-lang=&quot;c#&quot;&gt;&lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Structure&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Key&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Required&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Guid&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Id&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;set&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+        &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Name&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;set&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+        &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;virtual&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ICollection&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Project&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Project&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;set&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;[Key]表示是主鍵，[Required]表示是必填，Icollection是多對多關係的建置方式。&lt;/p&gt;
+
+&lt;p&gt;再來要將新增的表加到IdentituModels.cs裡面，如下：&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c#&quot; data-lang=&quot;c#&quot;&gt;&lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;ApplicationDbContext&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;IdentityDbContext&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ApplicationUser&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
+   &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    	&lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;DbSet&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Project&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Project&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;set&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    	&lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;DbSet&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Structure&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Structure&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;set&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    	&lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;ApplicationDbContext&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+            &lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;base&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;DefaultConnection&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;throwIfV1Schema&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+       &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+       &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+       &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ApplicationDbContext&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Create&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+       &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+           &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;ApplicationDbContext&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+       &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+   &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;h2 id=&quot;section-3&quot;&gt;套件管理器主控台&lt;/h2&gt;
+&lt;p&gt;接著我們要使用”套件管理器主控台”，以下指令的方式進行資料庫的操作，如下圖：&lt;br /&gt;
+&lt;img src=&quot;/image/ASP.NET_MVC_CodeFirst/SuiteManagement.png&quot; alt=&quot;SuiteManagement&quot; class=&quot;img-responsive&quot; height=&quot;700px&quot; width=&quot;600px&quot; /&gt;&lt;br /&gt;
+如果開啟的方案裡有多個專案時，記得要選擇”預設專案”，如下圖：&lt;br /&gt;
+&lt;img src=&quot;/image/ASP.NET_MVC_CodeFirst/DefaultProject.png&quot; alt=&quot;DefaultProject&quot; class=&quot;img-responsive&quot; height=&quot;180px&quot; width=&quot;900px&quot; /&gt;
+第一個指令：啟用資料庫移轉&lt;/p&gt;
+&lt;font color=&quot;red&quot;&gt;Enable-Migrations&lt;/font&gt;
+&lt;p&gt;執行Enable-Migrations指令後會在專案裡建立一個”Migrations”目錄和”Configuration.cs”檔案，如下圖：&lt;br /&gt;
+&lt;img src=&quot;/image/ASP.NET_MVC_CodeFirst/EnableMigrations.png&quot; alt=&quot;EnableMigrations&quot; class=&quot;img-responsive&quot; height=&quot;180px&quot; width=&quot;900px&quot; /&gt;&lt;br /&gt;
+&lt;img src=&quot;/image/ASP.NET_MVC_CodeFirst/ConfigurationFile.png&quot; alt=&quot;ConfigurationFile&quot; class=&quot;img-responsive&quot; height=&quot;400px&quot; width=&quot;250px&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;第二個指令：新增執行資料庫移轉&lt;/p&gt;
+&lt;font color=&quot;red&quot;&gt;Add-Migrations 移轉名稱&lt;/font&gt;
+&lt;p&gt;第一次執行新增資料庫移轉，可使用”Add-Migrations Init”；之後還有新增資料庫移轉的話，我會以是哪個人新增、資料表明撐和日期去當作名稱，像是”Add-Migrations Roy_Create_Project_20161114”，以這樣的方式，可以參考看看。執行如下圖：&lt;br /&gt;
+&lt;img src=&quot;/image/ASP.NET_MVC_CodeFirst/AddMigrations.png&quot; alt=&quot;AddMigrations&quot; class=&quot;img-responsive&quot; height=&quot;180px&quot; width=&quot;900px&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;指令完成之後，在Migrations目錄會新增一個檔案，這個移轉資料庫命令的檔案是等一下執行更新資料庫移轉時所要執行的內容，會比對系統內所定義的類別與資料庫表格的差異，然後顯示需要變化的內容。新增的檔案，如下圖：&lt;br /&gt;
+&lt;img src=&quot;/image/ASP.NET_MVC_CodeFirst/AddMigrationsInit.png&quot; alt=&quot;AddMigrationsInit&quot; class=&quot;img-responsive&quot; height=&quot;400px&quot; width=&quot;250px&quot; /&gt;&lt;br /&gt;
+資料庫表格的差異，如下圖：&lt;br /&gt;
+&lt;img src=&quot;/image/ASP.NET_MVC_CodeFirst/Init.png&quot; alt=&quot;Init&quot; class=&quot;img-responsive&quot; height=&quot;400px&quot; width=&quot;400px&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;第三個指令：執行更新資料庫移轉&lt;/p&gt;
+&lt;font color=&quot;red&quot;&gt;Update-Database&lt;/font&gt;
+&lt;p&gt;執行的圖如下：&lt;br /&gt;
+&lt;img src=&quot;/image/ASP.NET_MVC_CodeFirst/UpdateDatabase.png&quot; alt=&quot;UpdateDatabase&quot; class=&quot;img-responsive&quot; height=&quot;180px&quot; width=&quot;900px&quot; /&gt;&lt;br /&gt;
+執行完Update-Database指令後，可以在伺服器總管查看LocalDB的資料表內容，能夠看到建立的Project和Structure兩個Table之外，另外自動建立了StructureProjects這一個Table，這是多對多關係的Table，這是系統根據我們在類別裡所定義而建立的。如下圖：&lt;br /&gt;
+&lt;img src=&quot;/image/ASP.NET_MVC_CodeFirst/DataTable.png&quot; alt=&quot;DataTable&quot; class=&quot;img-responsive&quot; height=&quot;400px&quot; width=&quot;250px&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;使用Code First的步驟大概就如上述的過程，在開發階段時，如果類別有更動或是新增，那就是在重新執行，”Add-Migrations”和”Update-Database”指令。&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/royshow0316/MVC_CodeFirst&quot; target=&quot;_blank&quot;&gt;程式碼已放上Github&lt;/a&gt;&lt;/p&gt;
+
+</description>
+        <pubDate>Mon, 14 Nov 2016 13:49:31 +0800</pubDate>
+        <link>http://royshow.github.io//android/2016/11/14/ASP.NET_MVC_CodeFirst.html</link>
+        <guid isPermaLink="true">http://royshow.github.io//android/2016/11/14/ASP.NET_MVC_CodeFirst.html</guid>
+        
+        
+        <category>Android</category>
+        
+      </item>
+    
+      <item>
+        <title>ASP.NET MVC分層架構(1)-MVC</title>
+        <description>&lt;h2 id=&quot;section&quot;&gt;介紹&lt;/h2&gt;
+&lt;p&gt;什麼是MVC?，MVC是一種”設計模式”，不是程式語言也不是一種框架。把應用程式架構區分為三個部分，分別為Model(模型)、View(視圖)和Controller(控制器)。&lt;/p&gt;
+
+&lt;h2 id=&quot;section-1&quot;&gt;建立專案&lt;/h2&gt;
+&lt;p&gt;建立專案時，在Visual C#選擇Web，然後選擇ASP.NET Web應用程式，如下圖：&lt;br /&gt;
+&lt;img src=&quot;/image/ASP.NET_MVC(1)_MVC/Creat_Project.png&quot; alt=&quot;Creat_Project&quot; class=&quot;img-responsive&quot; height=&quot;800px&quot; width=&quot;600px&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;再來要選取範本，在這裡我們選取MVC，如下圖：&lt;br /&gt;
+&lt;img src=&quot;/image/ASP.NET_MVC(1)_MVC/Create_ProjectMVC.png&quot; alt=&quot;Create_ProjectMVC&quot; class=&quot;img-responsive&quot; height=&quot;800px&quot; width=&quot;600px&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;model&quot;&gt;Model&lt;/h2&gt;
+&lt;p&gt;“資料模型”用於封裝與應用程序的業務邏輯相關的數據以及對數據的處理方法。
+有關於資料處理的範圍都可屬於Model，例如：資料庫的存取操作(讀取、寫入)、資料結構的定義和資料格式的驗證…等。Model的資料夾呈現如下：&lt;br /&gt;
+&lt;img src=&quot;/image/ASP.NET_MVC(1)_MVC/Model.png&quot; alt=&quot;Model&quot; class=&quot;img-responsive&quot; height=&quot;600px&quot; width=&quot;400px&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;view&quot;&gt;View&lt;/h2&gt;
+&lt;p&gt;在頁面上顯示或是經由頁面傳回後端都是View所負責，View的呈現分為輸出和輸入，輸出：把資料輸出並顯示到使用者介面上，輸入：把使用者所輸入的資料傳回到伺服器端。
+有關於View的技術包含：
+1.Html/CSS
+2.JavaScript(JQuery, MoonTool, …etc)
+3.JSON / XML
+4.AJAX
+View的資料夾呈現如下：&lt;br /&gt;
+&lt;img src=&quot;/image/ASP.NET_MVC(1)_MVC/View.png&quot; alt=&quot;View&quot; class=&quot;img-responsive&quot; height=&quot;600px&quot; width=&quot;400px&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;controller&quot;&gt;Controller&lt;/h2&gt;
+&lt;p&gt;控制整個系統的業務流程；以及依據制定好的規則進行對資料處理以及View的使用。
+控制器接受外部傳入的資料並與Model進行資料處理，最後再由View回應外部的傳入並做顯示。
+Controller的資料夾呈現如下：&lt;br /&gt;
+&lt;img src=&quot;/image/ASP.NET_MVC(1)_MVC/Controller.png&quot; alt=&quot;Controller&quot; class=&quot;img-responsive&quot; height=&quot;600px&quot; width=&quot;400px&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;viewmodel&quot;&gt;ViewModel&lt;/h2&gt;
+&lt;p&gt;顧名思義就是針對某些View的需求而產生的Model，專給View所用，通常一個ViewModel只給一個View使用。
+通常會建立一個ViewModels的目錄來存放與管理。&lt;/p&gt;
+
+&lt;h2 id=&quot;section-2&quot;&gt;開發方法&lt;/h2&gt;
+&lt;p&gt;透過MVC分階段開發，如下：&lt;br /&gt;
+1.Model -&amp;gt; Controller -&amp;gt; View&lt;br /&gt;
+2.Model -&amp;gt; Respository -&amp;gt; Controller -&amp;gt; View&lt;br /&gt;
+3.Model -&amp;gt; Respository -&amp;gt; Service -&amp;gt; Controller -&amp;gt; View&lt;br /&gt;
+4.IOC/DI/AutoMapper/Unit Test/Integration Test &lt;br /&gt;
+一開始先以1.MVC的方式開發，在之後慢慢加入其他的分層方式，可以從中體會分層的好處，我的話，目前對於測試的部分，都還沒引入到專案中，也就是Unit Test和Integration Test，其他的都已加入到專案中。&lt;/p&gt;
+
+&lt;p&gt;在下一篇我們將加入Respository到專案。&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/royshow0316/MVC1&quot; target=&quot;_blank&quot;&gt;程式碼已放上Github&lt;/a&gt;&lt;/p&gt;
+
+</description>
+        <pubDate>Mon, 07 Nov 2016 13:49:31 +0800</pubDate>
+        <link>http://royshow.github.io//android/2016/11/07/ASP.NET_MVC%E5%88%86%E5%B1%A4%E6%9E%B6%E6%A7%8B(1)-MVC.html</link>
+        <guid isPermaLink="true">http://royshow.github.io//android/2016/11/07/ASP.NET_MVC%E5%88%86%E5%B1%A4%E6%9E%B6%E6%A7%8B(1)-MVC.html</guid>
+        
+        
+        <category>Android</category>
+        
+      </item>
     
       <item>
         <title>使用okHttp讀取JSON資料並用RxJava框架解析JSON格式資料成Gson</title>

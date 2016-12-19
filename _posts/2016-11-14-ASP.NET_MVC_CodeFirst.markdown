@@ -1,0 +1,84 @@
+---
+layout: post
+title:  "ASP.NET MVC-CodeFirst"
+date:   2016-11-14 13:49:31 +0800
+categories: Android
+---
+
+## 介紹
+"CodeFirst"是Entity Framework三種建置方法中的一種，其他兩種分別是"Database First"和"Model First"，而"Database First"是最多人使用在專案上的方式，至於"Model First"就比較少人採用這種方式。
+我們在開發專案的時候，先定義好系統內所使用的類別，而Entity Framework Code First會依照程式裡類別的定義在指定資料庫表格及欄位，這樣程式開發人員只需要專注在系統的開發，而不需要花時間先在資料庫裡建表格及欄位。而因為需求變更而要修改類別時，使用Code First只需要變更屬性設定，接著下指令後就會去修改資料庫裡的表格欄位，Code First的好處是對程式開發人員提供了比較多的彈性與操作。
+這裡並不是說Database First不好，Code First和Database First各有各的優點，如果開發人員可以控管專案所使用的資料庫時，在開發時就可以考慮使用Code First；如果開發人員沒有資料庫比較高的權限時，使用Database First會比較恰當。
+
+## 加入SQL Server資料庫
+在專案理的App_Data目錄裡加入SQL Server資料庫，在此利用LocalDB來實作。  
+![SQLServer](/image/ASP.NET_MVC_CodeFirst/SQLServer.png){:class="img-responsive" height="800px" width="600px"}  
+![mdf](/image/ASP.NET_MVC_CodeFirst/mdf.png){:class="img-responsive" height="600px" width="300px"}
+
+## 設定連線字串
+開啟根目錄下的Web.Config檔案，加入資料庫連接字串。
+{% highlight xml %}
+<connectionStrings>    <add name="DefaultConnection" connectionString="Data Source=(LocalDb)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\Sample.mdf;Initial Catalog=Sample;Integrated Security=True" providerName="System.Data.SqlClient" /></connectionStrings>
+{% endhighlight %}
+
+## 建立資料表
+在Models目錄下建立Project.cs和Structure.cs。  
+![DataClass](/image/ASP.NET_MVC_CodeFirst/DataClass.png){:class="img-responsive" height="600px" width="300px"}
+
+Project.cs
+{% highlight C# %}
+public class Project    {        [Key]        [Required]        public Guid Id { get; set; }        public string Name { get; set; }
+        
+        public virtual ICollection<Structure> Structure { get; set; }    }
+{% endhighlight %}
+Structure.cs
+{% highlight C# %}
+public class Structure    {        [Key]        [Required]        public Guid Id { get; set; }        public string Name { get; set; }        public virtual ICollection<Project> Project { get; set; }    }
+{% endhighlight %}
+[Key]表示是主鍵，[Required]表示是必填，Icollection是多對多關係的建置方式。
+
+再來要將新增的表加到IdentituModels.cs裡面，如下：
+{% highlight C# %}
+public class ApplicationDbContext : IdentityDbContext<ApplicationUser>   {
+    	public DbSet<Project> Project { get; set; }
+    	public DbSet<Structure> Structure { get; set; }
+    	public ApplicationDbContext()            : base("DefaultConnection", throwIfV1Schema: false)
+       {       }       public static ApplicationDbContext Create()       {           return new ApplicationDbContext();       }   }
+{% endhighlight %}
+
+## 套件管理器主控台
+接著我們要使用"套件管理器主控台"，以下指令的方式進行資料庫的操作，如下圖：  
+![SuiteManagement](/image/ASP.NET_MVC_CodeFirst/SuiteManagement.png){:class="img-responsive" height="700px" width="600px"}  
+如果開啟的方案裡有多個專案時，記得要選擇"預設專案"，如下圖：  
+![DefaultProject](/image/ASP.NET_MVC_CodeFirst/DefaultProject.png){:class="img-responsive" height="180px" width="900px"}
+第一個指令：啟用資料庫移轉
+<font color="red">Enable-Migrations</font>  
+執行Enable-Migrations指令後會在專案裡建立一個"Migrations"目錄和"Configuration.cs"檔案，如下圖：  
+![EnableMigrations](/image/ASP.NET_MVC_CodeFirst/EnableMigrations.png){:class="img-responsive" height="180px" width="900px"}  
+![ConfigurationFile](/image/ASP.NET_MVC_CodeFirst/ConfigurationFile.png){:class="img-responsive" height="400px" width="250px"}
+
+第二個指令：新增執行資料庫移轉  
+<font color="red">Add-Migrations 移轉名稱</font>  
+第一次執行新增資料庫移轉，可使用"Add-Migrations Init"；之後還有新增資料庫移轉的話，我會以是哪個人新增、資料表明撐和日期去當作名稱，像是"Add-Migrations Roy_Create_Project_20161114"，以這樣的方式，可以參考看看。執行如下圖：  
+![AddMigrations](/image/ASP.NET_MVC_CodeFirst/AddMigrations.png){:class="img-responsive" height="180px" width="900px"}
+
+指令完成之後，在Migrations目錄會新增一個檔案，這個移轉資料庫命令的檔案是等一下執行更新資料庫移轉時所要執行的內容，會比對系統內所定義的類別與資料庫表格的差異，然後顯示需要變化的內容。新增的檔案，如下圖：  
+![AddMigrationsInit](/image/ASP.NET_MVC_CodeFirst/AddMigrationsInit.png){:class="img-responsive" height="400px" width="250px"}  
+資料庫表格的差異，如下圖：  
+![Init](/image/ASP.NET_MVC_CodeFirst/Init.png){:class="img-responsive" height="400px" width="400px"}
+
+第三個指令：執行更新資料庫移轉  
+<font color="red">Update-Database</font>  
+執行的圖如下：  
+![UpdateDatabase](/image/ASP.NET_MVC_CodeFirst/UpdateDatabase.png){:class="img-responsive" height="180px" width="900px"}  
+執行完Update-Database指令後，可以在伺服器總管查看LocalDB的資料表內容，能夠看到建立的Project和Structure兩個Table之外，另外自動建立了StructureProjects這一個Table，這是多對多關係的Table，這是系統根據我們在類別裡所定義而建立的。如下圖：  
+![DataTable](/image/ASP.NET_MVC_CodeFirst/DataTable.png){:class="img-responsive" height="400px" width="250px"}  
+
+使用Code First的步驟大概就如上述的過程，在開發階段時，如果類別有更動或是新增，那就是在重新執行，"Add-Migrations"和"Update-Database"指令。
+
+
+[程式碼已放上Github](https://github.com/royshow0316/MVC_CodeFirst){:target='_blank'}
+
+[jekyll-docs]: http://jekyllrb.com/docs/home
+[jekyll-gh]:   https://github.com/jekyll/jekyll
+[jekyll-talk]: https://talk.jekyllrb.com/

@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>
+    八蛋的程式派對 | ASP.NET MVC-CodeFirst
+  </title>
+  <meta name="description" content="介紹 “CodeFirst”是Entity Framework三種建置方法中的一種，其他兩種分別是”Database First”和”Model First”，而”Database First”是最多人使用在專案上的方式，至於”Model First”就比較少人採用這種方式。 我們在開發專案的時候，先定義好系統內...">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royshow.github.io//android/2016/11/14/ASP.NET_MVC_CodeFirst.html">
+  <link rel="alternate" type="application/rss+xml" title="八蛋的程式派對" href="http://royshow.github.io//feed.xml">
+
+  <style>
+    @media screen and (min-width:600px) {
+      body {
+        width: 90%;
+        margin-left: 5%;
+      }
+    }
+    @media screen and (min-width:900px) {
+      body {
+        width: 80%;
+        margin-left: 10%;
+      }
+    }
+    @media screen and (min-width:1200px) {
+      body {
+        width: 70%;
+        margin-left: 15%;
+      }
+    }
+    @media screen and (min-width:1500px) {
+      body {
+        width: 60%;
+        margin-left: 20%;
+      }
+    }
+  </style>
+</head>
+  <div style="position:absolute;left:0"; style="background-color: #34352D">
+    
+  </div>
+  <body style="background-image: url('/image/background.png'); background-repeat: repeat">
+    <div align="center" style="background-color: #34352D; overflow: hidden">
+      <script type="text/javascript" src="//js1.bloggerads.net/ShowBanner.aspx?blogid=20161103000005"></script>
+    </div>
+    <div style="background-color: #eeeeee;">
+      <header class="site-header" role="banner">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">
+      <img src="/image/egg.png" height="24px" style="vertical-align: baseline" />
+      八蛋的程式派對
+    </a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+        
+          
+          <a class="page-link" href="/">文章列表</a>
+          
+        
+          
+        
+          
+          <a class="page-link" href="/about/">關於</a>
+          
+        
+          
+          <a class="page-link" href="/categories/">類別</a>
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+      <main class="page-content" aria-label="Content">
+          <div class="wrapper">
+            <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">ASP.NET MVC-CodeFirst</h1>
+    <p class="post-meta">
+      <time datetime="2016-11-14T13:49:31+08:00" itemprop="datePublished">
+        Nov 14, 2016
+      </time>
+      &nbsp;
+      <span class="categories">類別:
+        
+        <a href="/categories/#Android" title="Android">Android</a>&nbsp;
+        </span>
+      
+      &nbsp;
+      <span class="tags">標籤:
+        </span>
+      
+    </p>
+  </header>
+
+  <div class="post-content" itemprop="articleBody">
+    <h2 id="section">介紹</h2>
+<p>“CodeFirst”是Entity Framework三種建置方法中的一種，其他兩種分別是”Database First”和”Model First”，而”Database First”是最多人使用在專案上的方式，至於”Model First”就比較少人採用這種方式。
+我們在開發專案的時候，先定義好系統內所使用的類別，而Entity Framework Code First會依照程式裡類別的定義在指定資料庫表格及欄位，這樣程式開發人員只需要專注在系統的開發，而不需要花時間先在資料庫裡建表格及欄位。而因為需求變更而要修改類別時，使用Code First只需要變更屬性設定，接著下指令後就會去修改資料庫裡的表格欄位，Code First的好處是對程式開發人員提供了比較多的彈性與操作。
+這裡並不是說Database First不好，Code First和Database First各有各的優點，如果開發人員可以控管專案所使用的資料庫時，在開發時就可以考慮使用Code First；如果開發人員沒有資料庫比較高的權限時，使用Database First會比較恰當。</p>
+
+<h2 id="sql-server">加入SQL Server資料庫</h2>
+<p>在專案理的App_Data目錄裡加入SQL Server資料庫，在此利用LocalDB來實作。<br />
+<img src="/image/ASP.NET_MVC_CodeFirst/SQLServer.png" alt="SQLServer" class="img-responsive" height="800px" width="600px" /><br />
+<img src="/image/ASP.NET_MVC_CodeFirst/mdf.png" alt="mdf" class="img-responsive" height="600px" width="300px" /></p>
+
+<h2 id="section-1">設定連線字串</h2>
+<p>開啟根目錄下的Web.Config檔案，加入資料庫連接字串。</p>
+
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="nt">&lt;connectionStrings&gt;</span>
+    <span class="nt">&lt;add</span> <span class="na">name=</span><span class="s">"DefaultConnection"</span> <span class="na">connectionString=</span><span class="s">"Data Source=(LocalDb)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\Sample.mdf;Initial Catalog=Sample;Integrated Security=True"</span> <span class="na">providerName=</span><span class="s">"System.Data.SqlClient"</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;/connectionStrings&gt;</span></code></pre></figure>
+
+<h2 id="section-2">建立資料表</h2>
+<p>在Models目錄下建立Project.cs和Structure.cs。<br />
+<img src="/image/ASP.NET_MVC_CodeFirst/DataClass.png" alt="DataClass" class="img-responsive" height="600px" width="300px" /></p>
+
+<p>Project.cs</p>
+
+<figure class="highlight"><pre><code class="language-c#" data-lang="c#"><span class="k">public</span> <span class="k">class</span> <span class="nc">Project</span>
+    <span class="p">{</span>
+        <span class="p">[</span><span class="n">Key</span><span class="p">]</span>
+        <span class="p">[</span><span class="n">Required</span><span class="p">]</span>
+        <span class="k">public</span> <span class="n">Guid</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+
+        <span class="k">public</span> <span class="kt">string</span> <span class="n">Name</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+        
+        <span class="k">public</span> <span class="k">virtual</span> <span class="n">ICollection</span><span class="p">&lt;</span><span class="n">Structure</span><span class="p">&gt;</span> <span class="n">Structure</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+    <span class="p">}</span></code></pre></figure>
+
+<p>Structure.cs</p>
+
+<figure class="highlight"><pre><code class="language-c#" data-lang="c#"><span class="k">public</span> <span class="k">class</span> <span class="nc">Structure</span>
+    <span class="p">{</span>
+        <span class="p">[</span><span class="n">Key</span><span class="p">]</span>
+        <span class="p">[</span><span class="n">Required</span><span class="p">]</span>
+        <span class="k">public</span> <span class="n">Guid</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+
+        <span class="k">public</span> <span class="kt">string</span> <span class="n">Name</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+
+        <span class="k">public</span> <span class="k">virtual</span> <span class="n">ICollection</span><span class="p">&lt;</span><span class="n">Project</span><span class="p">&gt;</span> <span class="n">Project</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+    <span class="p">}</span></code></pre></figure>
+
+<p>[Key]表示是主鍵，[Required]表示是必填，Icollection是多對多關係的建置方式。</p>
+
+<p>再來要將新增的表加到IdentituModels.cs裡面，如下：</p>
+
+<figure class="highlight"><pre><code class="language-c#" data-lang="c#"><span class="k">public</span> <span class="k">class</span> <span class="nc">ApplicationDbContext</span> <span class="p">:</span> <span class="n">IdentityDbContext</span><span class="p">&lt;</span><span class="n">ApplicationUser</span><span class="p">&gt;</span>
+   <span class="p">{</span>
+    	<span class="k">public</span> <span class="n">DbSet</span><span class="p">&lt;</span><span class="n">Project</span><span class="p">&gt;</span> <span class="n">Project</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+    	<span class="k">public</span> <span class="n">DbSet</span><span class="p">&lt;</span><span class="n">Structure</span><span class="p">&gt;</span> <span class="n">Structure</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+    	<span class="k">public</span> <span class="nf">ApplicationDbContext</span><span class="p">()</span>
+            <span class="p">:</span> <span class="k">base</span><span class="p">(</span><span class="s">"DefaultConnection"</span><span class="p">,</span> <span class="n">throwIfV1Schema</span><span class="p">:</span> <span class="k">false</span><span class="p">)</span>
+       <span class="p">{</span>
+       <span class="p">}</span>
+
+       <span class="k">public</span> <span class="k">static</span> <span class="n">ApplicationDbContext</span> <span class="nf">Create</span><span class="p">()</span>
+       <span class="p">{</span>
+           <span class="k">return</span> <span class="k">new</span> <span class="nf">ApplicationDbContext</span><span class="p">();</span>
+       <span class="p">}</span>
+   <span class="p">}</span></code></pre></figure>
+
+<h2 id="section-3">套件管理器主控台</h2>
+<p>接著我們要使用”套件管理器主控台”，以下指令的方式進行資料庫的操作，如下圖：<br />
+<img src="/image/ASP.NET_MVC_CodeFirst/SuiteManagement.png" alt="SuiteManagement" class="img-responsive" height="700px" width="600px" /><br />
+如果開啟的方案裡有多個專案時，記得要選擇”預設專案”，如下圖：<br />
+<img src="/image/ASP.NET_MVC_CodeFirst/DefaultProject.png" alt="DefaultProject" class="img-responsive" height="180px" width="900px" />
+第一個指令：啟用資料庫移轉</p>
+<font color="red">Enable-Migrations</font>
+<p>執行Enable-Migrations指令後會在專案裡建立一個”Migrations”目錄和”Configuration.cs”檔案，如下圖：<br />
+<img src="/image/ASP.NET_MVC_CodeFirst/EnableMigrations.png" alt="EnableMigrations" class="img-responsive" height="180px" width="900px" /><br />
+<img src="/image/ASP.NET_MVC_CodeFirst/ConfigurationFile.png" alt="ConfigurationFile" class="img-responsive" height="400px" width="250px" /></p>
+
+<p>第二個指令：新增執行資料庫移轉</p>
+<font color="red">Add-Migrations 移轉名稱</font>
+<p>第一次執行新增資料庫移轉，可使用”Add-Migrations Init”；之後還有新增資料庫移轉的話，我會以是哪個人新增、資料表明撐和日期去當作名稱，像是”Add-Migrations Roy_Create_Project_20161114”，以這樣的方式，可以參考看看。執行如下圖：<br />
+<img src="/image/ASP.NET_MVC_CodeFirst/AddMigrations.png" alt="AddMigrations" class="img-responsive" height="180px" width="900px" /></p>
+
+<p>指令完成之後，在Migrations目錄會新增一個檔案，這個移轉資料庫命令的檔案是等一下執行更新資料庫移轉時所要執行的內容，會比對系統內所定義的類別與資料庫表格的差異，然後顯示需要變化的內容。新增的檔案，如下圖：<br />
+<img src="/image/ASP.NET_MVC_CodeFirst/AddMigrationsInit.png" alt="AddMigrationsInit" class="img-responsive" height="400px" width="250px" /><br />
+資料庫表格的差異，如下圖：<br />
+<img src="/image/ASP.NET_MVC_CodeFirst/Init.png" alt="Init" class="img-responsive" height="400px" width="400px" /></p>
+
+<p>第三個指令：執行更新資料庫移轉</p>
+<font color="red">Update-Database</font>
+<p>執行的圖如下：<br />
+<img src="/image/ASP.NET_MVC_CodeFirst/UpdateDatabase.png" alt="UpdateDatabase" class="img-responsive" height="180px" width="900px" /><br />
+執行完Update-Database指令後，可以在伺服器總管查看LocalDB的資料表內容，能夠看到建立的Project和Structure兩個Table之外，另外自動建立了StructureProjects這一個Table，這是多對多關係的Table，這是系統根據我們在類別裡所定義而建立的。如下圖：<br />
+<img src="/image/ASP.NET_MVC_CodeFirst/DataTable.png" alt="DataTable" class="img-responsive" height="400px" width="250px" /></p>
+
+<p>使用Code First的步驟大概就如上述的過程，在開發階段時，如果類別有更動或是新增，那就是在重新執行，”Add-Migrations”和”Update-Database”指令。</p>
+
+<p><a href="https://github.com/royshow0316/MVC_CodeFirst" target="_blank">程式碼已放上Github</a></p>
+
+
+  </div>
+
+</article>
+
+          </div>
+      </main>
+      <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <!--<h2 class="footer-heading">八蛋的程式派對</h2>-->
+    <p></p>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1" align="center">
+        <ul class="contact-list">
+          <!-- <li>八蛋的程式派對</li> -->
+          <li>聯絡我</li>
+          <li><a href="mailto:royshow0316@gmail.com">royshow0316@gmail.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-2" align="center">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/royshow"><span class="icon icon--github"><svg viewBox="0 0 16 16"><path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/></svg>
+</span><span class="username">royshow</span></a>
+
+          </li>
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3" align="center">
+        <!-- <p>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.
+</p> -->
+        <p>Powered by <a href="https://jekyllrb.com/" target="_blank">Jekyll</a>
+        ,  Hosted by <a href="https://github.com/" target="_blank">Github</a>
+        </p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+    </div>
+  </body>
+
+</html>
