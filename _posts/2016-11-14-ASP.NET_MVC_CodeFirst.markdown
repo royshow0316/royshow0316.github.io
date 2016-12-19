@@ -2,7 +2,7 @@
 layout: post
 title:  "ASP.NET MVC-CodeFirst"
 date:   2016-11-14 13:49:31 +0800
-categories: Asp.Net MVC
+categories: Asp.Net　MVC
 ---
 
 ## 介紹
