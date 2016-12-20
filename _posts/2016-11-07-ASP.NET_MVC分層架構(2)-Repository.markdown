@@ -1,0 +1,88 @@
+---
+layout: post
+title:  "ASP.NET MVC分層架構(2)-Repository"
+date:   2016-11-21 13:49:31 +0800
+categories: Asp.Net　MVC
+---
+
+## 介紹
+在Controller直接去使用ApplicationDbContext對資料庫進行處理不是好的做法，所以要把這種方式做改變，不要直接在Controller中直接對ApplicationDbContext進行資料操作，這裡有一個重要的觀念是"關注點分離(SOC)"。以下對"關注點分離"稍微解釋一下，資料操作就是一種關注點，而資料驗證、流程控制都是關注點，當把這些關注點都放在一起的話，會覺得很混亂，所以我們可以把對資料庫做操作的部分給抽離出來，這就叫做"關注點分離"。
+把資料庫抽離出來，通常會使用一種設計模式"Repository Pattern"，而這個模式就是用來處理資料操作，資料操作基本上一定有"CRUD"也就是Create(建立)、Read(讀取)、Update(更新)和Delete(刪除)，所以我們就去為每個Model類別建立專屬的Repository類別，每個Repository類別只專注於自己所負責的Model的資料操作，不會干涉到其他資料類別的操作。
+建立Repository還有一個優點是可重複使用，像是取得某筆資料、取得全部資料，這些資料操作會經常重複使用，可以將這些重複性高的方法建立在Repository，所以如果取得的資料有變動的話，就只需要修改Repository的方法就可以了。
+以下我們會先介紹在Controller直接對資料庫做操作的方式，再介紹加入Repository的方式。以Project這一個Model實作在Controller對資料庫操作，Structure這一個Model則是加入Repository後的資料庫操作。
+
+## HomeController
+HomeController的程式內容是初學者最常寫的一種，在HomeController去new一個全域的_context出來，這樣的操作是可以達到資料操作的要求沒錯，但是每個Controller的Action都要這樣處理時，這樣的方式就會很累人，而且在控制流程的地方直接對資料庫進行處理也不是那麼恰當。
+{% highlight C# %}
+private readonly ApplicationDbContext _context = new ApplicationDbContext();
+public ActionResult Index(){	var projects = _context.Project.ToList();	var viewModel = new ProjectListViewModel();
+	viewModel.ProjectList = projects;
+	return View(viewModel);
+}
+public ActionResult Create(){
+	var viewModel = new ProjectViewModel();	return View(viewModel);}
+public ActionResult Edit(Guid id){	var viewModel = new ProjectViewModel();
+	var model = _context.Project.Find(id);
+	viewModel.Id = id;
+	viewModel.Name = model.Name;
+	return View("Create", viewModel);}
+[HttpPost]public ActionResult Save(ProjectViewModel viewModel){	if (ModelState.IsValid)	{		if (viewModel.Id == Guid.Empty)		{			var model = new Project();			model.Id = Guid.NewGuid();			model.Name = viewModel.Name;			_context.Project.Add(model);			_context.SaveChanges();		}		else		{			var model = _context.Project.Find(viewModel.Id);			model.Name = viewModel.Name;			_context.Project.AddOrUpdate(model);			_context.SaveChanges();		}		return RedirectToAction("Index");	}	return View("Create", viewModel);}
+public ActionResult Delete(Guid id){
+	var model = _context.Project.Find(id);
+	_context.Project.Remove(model);
+	_context.SaveChanges();
+	return RedirectToAction("Index");}
+{% endhighlight %}
+
+## Home的Index
+顯示Project表中的資料，如下圖：
+{% highlight html %}
+@model MVC.ViewModels.ProjectListViewModel@{    ViewBag.Title = "顯示";}<h2>@ViewBag.Title.</h2><h4>顯示專案。</h4>
+@Html.ActionLink("新增", "Create", "Home", new { @class = "btn btn-primary" })<hr/><table class="table table-bordered table-striped">    <thead>    <tr class="alert-info">        <th>專案名稱</th>
+        <th>動作</th>    </tr>    </thead>    <tbody>        @foreach (var item in Model.ProjectList)        {            <tr>                <td>@item.Name</td>
+                <td>                    @Html.ActionLink("編輯", "Edit", new { id = item.Id }, new { @class = "btn btn-info" })                    @Html.ActionLink("刪除", "Delete", new { id = item.Id }, new { @class = "btn btn-danger" })                </td>            </tr>        }    </tbody></table>
+{% endhighlight %}
+![ProjectList](/image/ASP.NET_MVC(2)_Repository/ProjectList.png){:class="img-responsive" height="200px" width="600px"}
+
+## Home的Create
+新增專案的頁面和編輯頁面共用，如下圖：
+{% highlight html %}
+@model MVC.ViewModels.ProjectViewModel@if (Model.Id == Guid.Empty){    {        ViewBag.Title = "新增";    }    <h2>新增</h2>    <h4>新增專案。</h4>}else{    {        ViewBag.Title = "編輯";    }    <h2>編輯</h2>    <h4>編輯專案。</h4>}<hr/>@using (Html.BeginForm("Save", "Home", FormMethod.Post, new { @class = "form-horizontal", role = "form" })){
+	@Html.HiddenFor(x => x.Id)    <div class="form-group">        @Html.Label("專案名稱", new { @class = "col-md-2 control-label" })        <div class="col-md-10">            @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })        </div>    </div>    <div class="form-group">        <div class="col-md-offset-2 col-md-10">            <input type="submit" class="btn btn-default" value="送出" />        </div>    </div>}
+{% endhighlight %}
+![ProjectCreate](/image/ASP.NET_MVC(2)_Repository/ProjectCreate.png){:class="img-responsive" height="200px" width="600px"}
+
+## 建立Repository
+先建立Repository類別的介面，建立介面是為了避免依賴Repository類別，之後在Controller只要用介面來進行資料操作，不需要直接使用Repository類別。
+在專案中的Model目錄下建立Interface目錄，並新增一個IStructrueRepository。
+IStructrueRepository.cs
+{% highlight C# %}
+namespace MVC.Models.Interface{    public interface IStructureRepository : IDisposable    {        void Create(Project instance);        void Update(Project instance);        void Delete(Project instance);        Project Get(Guid projectId);        IQueryable<Project> GetAll();        void SaveChanges();    }}
+{% endhighlight %}
+建立Repository類別，並實作剛剛建立的Interface，最後還要實作IDisposable介面，讓資料操作後可以釋放資源。
+StructrueRepository.cs
+{% highlight C# %}
+namespace MVC.Models.Repository{    public class StructureRepository : IStructureRepository, IDisposable    {        protected ApplicationDbContext Context        {            get;            private set;        }        public StructureRepository()        {            this.Context = new ApplicationDbContext();        }        public void Create(Structure instance)        {            if (instance == null)            {                throw new ArgumentNullException("instance");            }            else            {                Context.Structure.Add(instance);                this.SaveChanges();            }        }        public void Update(Structure instance)        {            if (instance == null)            {                throw new ArgumentNullException("instance");            }            else            {                Context.Entry(instance).State = EntityState.Modified;                this.SaveChanges();            }        }        public void Delete(Structure instance)        {            if (instance == null)            {                throw new ArgumentNullException("instance");            }            else            {                Context.Entry(instance).State = EntityState.Deleted;                this.SaveChanges();            }        }        public Structure Get(Guid id)        {            return Context.Structure.FirstOrDefault(x => x.Id == id);        }        public IQueryable<Structure> GetAll()        {            return Context.Structure.OrderBy(x => x.Id);        }        public void SaveChanges()        {            this.Context.SaveChanges();        }        public void Dispose()        {            this.Dispose(true);            GC.SuppressFinalize(this);        }        protected virtual void Dispose(bool disposing)        {            if (disposing)            {                if (this.Context != null)                {                    this.Context.Dispose();                    this.Context = null;                }            }        }    }}
+{% endhighlight %}
+
+## 在Controller中使用Repository
+建立好StructureRepository後就是在StructureController中使用，我們在Controller中是用Interface類別來操作資料，所以在Controller會增加以下程式。
+{% highlight C# %}
+public class StructureController : Controller{	private IStructureRepository structureRepository;	public StructureController()	{		this.structureRepository = new StructureRepository();	}}
+{% endhighlight %}
+
+##  StructureController
+加入Repository的Controller，該如何做CRUD，請看以下程式。
+{% highlight C# %}
+public class StructureController : Controller{	private IStructureRepository structureRepository;	public StructureController()	{		this.structureRepository = new StructureRepository();	}	// GET: Structure	public ActionResult Index()	{		var structures = structureRepository.GetAll().ToList();		var viewModel = new StructureListViewModel();		viewModel.StructureList = structures;		return View(viewModel);	}	public ActionResult Create()	{		var viewModel = new StructureViewModel();		return View(viewModel);	}	public ActionResult Edit(Guid id)	{		var viewModel = new StructureViewModel();		var model = structureRepository.Get(id);		viewModel.Id = id;		viewModel.Name = model.Name;		return View("Create", viewModel);	}	[HttpPost]	public ActionResult Save(StructureViewModel viewModel)	{		if (ModelState.IsValid)		{			if (viewModel.Id == Guid.Empty)			{				var model = new Structure();				model.Id = Guid.NewGuid();				model.Name = viewModel.Name;				structureRepository.Create(model);			}			else			{				var model = structureRepository.Get(viewModel.Id);				model.Name = viewModel.Name;				structureRepository.Update(model);			}			return RedirectToAction("Index");		}		return View("Create", viewModel);	}	public ActionResult Delete(Guid id)	{		var model = structureRepository.Get(id);		structureRepository.Delete(model);		return RedirectToAction("Index");	}}
+{% endhighlight %}
+到這裡就完成了Repository的實作與應用，StructureController沒有直接對資料庫進行資料操作，而是透過Repository來進行資料的存取，在Controller的方法裡就不再需要考慮到對資料庫的存取操作。
+如果將Project也寫成Repository，就會看出和Structure有重複的地方，像是基本的資料操作CRUD，只有操作的類別不同，其他幾乎都一樣，所以可以將相同的部分抽離，那我們在下一篇將抽出Repository理重複的部分。
+
+
+
+[程式碼已放上Github](https://github.com/royshow0316/MVC2){:target='_blank'}
+
+[jekyll-docs]: http://jekyllrb.com/docs/home
+[jekyll-gh]:   https://github.com/jekyll/jekyll
+[jekyll-talk]: https://talk.jekyllrb.com/
