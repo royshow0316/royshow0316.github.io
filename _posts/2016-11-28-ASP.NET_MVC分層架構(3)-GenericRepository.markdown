@@ -2,7 +2,7 @@
 layout: post
 title:  "ASP.NET MVC分層架構(3)-利用泛型(Generic)抽離Repository"
 date:   2016-11-28 13:49:31 +0800
-categories: Android
+categories: Asp.Net　MVC
 ---
 
 ## 介紹
@@ -25,11 +25,10 @@ public class HomeController : Controller{    private readonly IRepository<Proj
 {% endhighlight %}
 StructureContorller也是類似的修改方式，在兩個Controller的程式裡，原本是要使用IStructureRepository或是直接對資料庫做存取的方式，現在建立了IRepository和GenericRepository後，就不再需要用到之前所建立的Repository，將基本的資料操作抽離出來並使用泛型，這樣就不需要重複去建立基本的資料操作。
 
-
-
-
-
 [程式碼已放上Github](https://github.com/royshow0316/MVC3){:target='_blank'}
+
+參考資料：  
+[http://kevintsengtw.blogspot.tw/2012/10/aspnet-mvc-part2-repository.html](http://kevintsengtw.blogspot.tw/2012/10/aspnet-mvc-part2-repository.html){:target='_blank'}
 
 [jekyll-docs]: http://jekyllrb.com/docs/home
 [jekyll-gh]:   https://github.com/jekyll/jekyll

@@ -7,12 +7,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>
-    八蛋的程式派對 | ASP.NET MVC分層架構(1)-MVC
+    八蛋的程式派對 | ASP.NET MVC分層架構(4)-抽出Model層並建立為類別庫專案
   </title>
-  <meta name="description" content="介紹 什麼是MVC?，MVC是一種”設計模式”，不是程式語言也不是一種框架。把應用程式架構區分為三個部分，分別為Model(模型)、View(視圖)和Controller(控制器)。">
+  <meta name="description" content="介紹 在之前，我們使用了Repository Pattern把有關於資料存取的部分從Controller中抽離出來，現在我們要做的是把專案中有關資料存取的部分給抽出來，另外建立一個專案來放置這些抽取出來的資料層。把Model層從Web專案中抽離出來，這樣Web層只需要專注於資料呈現以及控制流程的部分，凡是跟資料有...">
 
   <link rel="stylesheet" href="/css/main.css">
-  <link rel="canonical" href="http://royshow.github.io//asp.net%E3%80%80mvc/2016/11/07/ASP.NET_MVC%E5%88%86%E5%B1%A4%E6%9E%B6%E6%A7%8B(1)-MVC.html">
+  <link rel="canonical" href="http://royshow.github.io//asp.net%E3%80%80mvc/2016/12/05/ASP.NET_MVC%E5%88%86%E5%B1%A4%E6%9E%B6%E6%A7%8B(4)-Model.html">
   <link rel="alternate" type="application/rss+xml" title="八蛋的程式派對" href="http://royshow.github.io//feed.xml">
 
   <style>
@@ -97,10 +97,10 @@
             <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
 
   <header class="post-header">
-    <h1 class="post-title" itemprop="name headline">ASP.NET MVC分層架構(1)-MVC</h1>
+    <h1 class="post-title" itemprop="name headline">ASP.NET MVC分層架構(4)-抽出Model層並建立為類別庫專案</h1>
     <p class="post-meta">
-      <time datetime="2016-11-07T13:49:31+08:00" itemprop="datePublished">
-        Nov 7, 2016
+      <time datetime="2016-12-05T13:49:31+08:00" itemprop="datePublished">
+        Dec 5, 2016
       </time>
       &nbsp;
       <span class="categories">類別:
@@ -117,54 +117,37 @@
 
   <div class="post-content" itemprop="articleBody">
     <h2 id="section">介紹</h2>
-<p>什麼是MVC?，MVC是一種”設計模式”，不是程式語言也不是一種框架。把應用程式架構區分為三個部分，分別為Model(模型)、View(視圖)和Controller(控制器)。</p>
+<p>在之前，我們使用了Repository Pattern把有關於資料存取的部分從Controller中抽離出來，現在我們要做的是把專案中有關資料存取的部分給抽出來，另外建立一個專案來放置這些抽取出來的資料層。把Model層從Web專案中抽離出來，這樣Web層只需要專注於資料呈現以及控制流程的部分，凡是跟資料有關的存取操作就不會出現在Web專案中，讓各自的專案專注於各自的事情。</p>
 
-<h2 id="section-1">建立專案</h2>
-<p>建立專案時，在Visual C#選擇Web，然後選擇ASP.NET Web應用程式，如下圖：<br />
-<img src="/image/ASP.NET_MVC(1)_MVC/Creat_Project.png" alt="Creat_Project" class="img-responsive" height="700px" width="600px" /></p>
+<h2 id="section-1">建立新專案</h2>
+<p>在方案的選項中，用右鍵點選，如下圖：<br />
+<img src="/image/ASP.NET_MVC(4)_Model/Solution.png" alt="Solution" class="img-responsive" height="500px" width="180px" /><br />
+<img src="/image/ASP.NET_MVC(4)_Model/CreateProject.png" alt="CreateProject" class="img-responsive" height="400px" width="400px" /><br />
+選擇建立的專案類別為”類別庫”，名稱取為SQLModel，如下圖：<br />
+<img src="/image/ASP.NET_MVC(4)_Model/CreateProjectLibrary.png" alt="CreateProjectLibrary" class="img-responsive" height="500px" width="500px" /></p>
 
-<p>再來要選取範本，在這裡我們選取MVC，如下圖：<br />
-<img src="/image/ASP.NET_MVC(1)_MVC/Create_ProjectMVC.png" alt="Create_ProjectMVC" class="img-responsive" height="700px" width="600px" /></p>
+<h2 id="models">搬移Models</h2>
+<p>把Web專案中的Model資料庫類別和IdentityModels.cs移動到SQLModel層專案，因為新增的專案會缺少套件，首先先去下載需要的套件，例如：EntityFramework、Idenity…等，接著在新建立的Models專案中新增資料模型，這裡是用CodeFirst來實作，所以是下指令去新增資料庫，如下圖：<br />
+<img src="/image/ASP.NET_MVC(4)_Model/CodeFirst.png" alt="CodeFirst" class="img-responsive" height="200px" width="400px" /><br />
+接著就是把Web專案Models目錄下的檔案搬到SQLModel專案下，在App_Start有一個檔案IdentityConfig也要搬到SQLModel專案，Web專案中的ViewModels也要移動到SQLModel層專案的ViewModels資料夾裡，如下圖：<br />
+<img src="/image/ASP.NET_MVC(4)_Model/SQLModel.png" alt="SQLModel" class="img-responsive" height="500px" width="300px" /></p>
 
-<h2 id="model">Model</h2>
-<p>“資料模型”用於封裝與應用程序的業務邏輯相關的數據以及對數據的處理方法。
-有關於資料處理的範圍都可屬於Model，例如：資料庫的存取操作(讀取、寫入)、資料結構的定義和資料格式的驗證…等。Model的資料夾呈現如下：<br />
-<img src="/image/ASP.NET_MVC(1)_MVC/Model.png" alt="Model" class="img-responsive" height="500px" width="200px" /></p>
+<h2 id="section-2">加入參考</h2>
+<p>因為把Models給抽出去另外獨立成一個專案，所以原本的Web專案就必須加入同一個方案下的SQLModel專案參考，出現參考管理員視窗後，勾選SQLModel專案，如下圖：<br />
+<img src="/image/ASP.NET_MVC(4)_Model/AddReference.png" alt="AddReference" class="img-responsive" height="600px" width="400px" /><br />
+<img src="/image/ASP.NET_MVC(4)_Model/ReferenceManager.png" alt="ReferenceManager" class="img-responsive" height="500px" width="500px" /><br />
+加入SQLModel專案後，可以在Web專案的參考看到”SQLModel”，如下圖：<br />
+<img src="/image/ASP.NET_MVC(4)_Model/WebReference.png" alt="WebReference" class="img-responsive" height="600px" width="100px" /><br />
+重建整個方案，方案建置成功後，執行網站看是否修改成功。</p>
 
-<h2 id="view">View</h2>
-<p>在頁面上顯示或是經由頁面傳回後端都是View所負責，View的呈現分為輸出和輸入，輸出：把資料輸出並顯示到使用者介面上，輸入：把使用者所輸入的資料傳回到伺服器端。
-有關於View的技術包含：
-1.Html/CSS
-2.JavaScript(JQuery, MoonTool, …etc)
-3.JSON / XML
-4.AJAX
-View的資料夾呈現如下：<br />
-<img src="/image/ASP.NET_MVC(1)_MVC/View.png" alt="View" class="img-responsive" height="500px" width="200px" /></p>
+<h2 id="models-1">Models專案獨立的好處</h2>
+<p>在專案很大的時候，將專案拆分的細一點，才不會看起來很亂，而在多人開發的時候，而Model也越來越多，可能會有人不管單一職責的問題，隨便的在Repository加入自己要用的方法，就會使得Model專案很混亂，但是至少有將Model和Web專案拆開來，不至於Web專案也會很亂，這就是好處之一。
+下一篇將加入Service層，Service層是Repository層裡的商業邏輯部分，讓Repository能夠單純的做資料操作的存取，像是如何取得資料、取得多少資料…等，跟商業邏輯沒有相關的操作。</p>
 
-<h2 id="controller">Controller</h2>
-<p>控制整個系統的業務流程；以及依據制定好的規則進行對資料處理以及View的使用。
-控制器接受外部傳入的資料並與Model進行資料處理，最後再由View回應外部的傳入並做顯示。
-Controller的資料夾呈現如下：<br />
-<img src="/image/ASP.NET_MVC(1)_MVC/Controller.png" alt="Controller" class="img-responsive" height="500px" width="200px" /></p>
-
-<h2 id="viewmodel">ViewModel</h2>
-<p>顧名思義就是針對某些View的需求而產生的Model，專給View所用，通常一個ViewModel只給一個View使用。
-通常會建立一個ViewModels的目錄來存放與管理。</p>
-
-<h2 id="section-2">開發方法</h2>
-<p>透過MVC分階段開發，如下：<br />
-1.Model -&gt; Controller -&gt; View<br />
-2.Model -&gt; Respository -&gt; Controller -&gt; View<br />
-3.Model -&gt; Respository -&gt; Service -&gt; Controller -&gt; View<br />
-4.IOC/DI/AutoMapper/Unit Test/Integration Test <br />
-一開始先以1.MVC的方式開發，在之後慢慢加入其他的分層方式，可以從中體會分層的好處；我目前對於測試的部分，都還沒引入到專案中，也就是Unit Test和Integration Test，其他的都已加入到專案中使用。</p>
-
-<p>在下一篇我們將加入Respository到專案。</p>
-
-<p><a href="https://github.com/royshow0316/MVC1" target="_blank">程式碼已放上Github</a></p>
+<p><a href="https://github.com/royshow0316/JsonTest" target="_blank">程式碼已放上Github</a></p>
 
 <p>參考資料：<br />
-<a href="http://kevintsengtw.blogspot.tw/2012/10/aspnet-mvc-part1.html" target="_blank">http://kevintsengtw.blogspot.tw/2012/10/aspnet-mvc-part1.html</a></p>
+<a href="http://kevintsengtw.blogspot.tw/2012/11/aspnet-mvc-part4-model-project.html" target="_blank">http://kevintsengtw.blogspot.tw/2012/11/aspnet-mvc-part4-model-project.html</a></p>
 
 
   </div>

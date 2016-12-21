@@ -79,9 +79,10 @@ public class StructureController : Controller{	private IStructureRepository st
 到這裡就完成了Repository的實作與應用，StructureController沒有直接對資料庫進行資料操作，而是透過Repository來進行資料的存取，在Controller的方法裡就不再需要考慮到對資料庫的存取操作。
 如果將Project也寫成Repository，就會看出和Structure有重複的地方，像是基本的資料操作CRUD，只有操作的類別不同，其他幾乎都一樣，所以可以將相同的部分抽離，那我們在下一篇將抽出Repository理重複的部分。
 
-
-
 [程式碼已放上Github](https://github.com/royshow0316/MVC2){:target='_blank'}
+
+參考資料：  
+[http://kevintsengtw.blogspot.tw/2012/10/aspnet-mvc-part1.html](http://kevintsengtw.blogspot.tw/2012/10/aspnet-mvc-part1.html){:target='_blank'}
 
 [jekyll-docs]: http://jekyllrb.com/docs/home
 [jekyll-gh]:   https://github.com/jekyll/jekyll

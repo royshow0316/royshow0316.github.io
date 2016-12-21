@@ -1,0 +1,43 @@
+---
+layout: post
+title:  "ASP.NET MVC分層架構(4)-抽出Model層並建立為類別庫專案"
+date:   2016-12-05 13:49:31 +0800
+categories: Asp.Net　MVC
+---
+
+## 介紹
+在之前，我們使用了Repository Pattern把有關於資料存取的部分從Controller中抽離出來，現在我們要做的是把專案中有關資料存取的部分給抽出來，另外建立一個專案來放置這些抽取出來的資料層。把Model層從Web專案中抽離出來，這樣Web層只需要專注於資料呈現以及控制流程的部分，凡是跟資料有關的存取操作就不會出現在Web專案中，讓各自的專案專注於各自的事情。
+
+## 建立新專案
+在方案的選項中，用右鍵點選，如下圖：  
+![Solution](/image/ASP.NET_MVC(4)_Model/Solution.png){:class="img-responsive" height="500px" width="180px"}  
+![CreateProject](/image/ASP.NET_MVC(4)_Model/CreateProject.png){:class="img-responsive" height="400px" width="400px"}  
+選擇建立的專案類別為"類別庫"，名稱取為SQLModel，如下圖：  
+![CreateProjectLibrary](/image/ASP.NET_MVC(4)_Model/CreateProjectLibrary.png){:class="img-responsive" height="500px" width="500px"}  
+
+## 搬移Models
+把Web專案中的Model資料庫類別和IdentityModels.cs移動到SQLModel層專案，因為新增的專案會缺少套件，首先先去下載需要的套件，例如：EntityFramework、Idenity...等，接著在新建立的Models專案中新增資料模型，這裡是用CodeFirst來實作，所以是下指令去新增資料庫，如下圖：  
+![CodeFirst](/image/ASP.NET_MVC(4)_Model/CodeFirst.png){:class="img-responsive" height="200px" width="400px"}  
+接著就是把Web專案Models目錄下的檔案搬到SQLModel專案下，在App_Start有一個檔案IdentityConfig也要搬到SQLModel專案，Web專案中的ViewModels也要移動到SQLModel層專案的ViewModels資料夾裡，如下圖：  
+![SQLModel](/image/ASP.NET_MVC(4)_Model/SQLModel.png){:class="img-responsive" height="500px" width="300px"}
+
+## 加入參考
+因為把Models給抽出去另外獨立成一個專案，所以原本的Web專案就必須加入同一個方案下的SQLModel專案參考，出現參考管理員視窗後，勾選SQLModel專案，如下圖：  
+![AddReference](/image/ASP.NET_MVC(4)_Model/AddReference.png){:class="img-responsive" height="600px" width="400px"}  
+![ReferenceManager](/image/ASP.NET_MVC(4)_Model/ReferenceManager.png){:class="img-responsive" height="500px" width="500px"}  
+加入SQLModel專案後，可以在Web專案的參考看到"SQLModel"，如下圖：  
+![WebReference](/image/ASP.NET_MVC(4)_Model/WebReference.png){:class="img-responsive" height="600px" width="100px"}  
+重建整個方案，方案建置成功後，執行網站看是否修改成功。
+
+## Models專案獨立的好處
+在專案很大的時候，將專案拆分的細一點，才不會看起來很亂，而在多人開發的時候，而Model也越來越多，可能會有人不管單一職責的問題，隨便的在Repository加入自己要用的方法，就會使得Model專案很混亂，但是至少有將Model和Web專案拆開來，不至於Web專案也會很亂，這就是好處之一。
+下一篇將加入Service層，Service層是Repository層裡的商業邏輯部分，讓Repository能夠單純的做資料操作的存取，像是如何取得資料、取得多少資料...等，跟商業邏輯沒有相關的操作。
+
+[程式碼已放上Github](https://github.com/royshow0316/JsonTest){:target='_blank'}
+
+參考資料：  
+[http://kevintsengtw.blogspot.tw/2012/11/aspnet-mvc-part4-model-project.html](http://kevintsengtw.blogspot.tw/2012/11/aspnet-mvc-part4-model-project.html){:target='_blank'}
+
+[jekyll-docs]: http://jekyllrb.com/docs/home
+[jekyll-gh]:   https://github.com/jekyll/jekyll
+[jekyll-talk]: https://talk.jekyllrb.com/
