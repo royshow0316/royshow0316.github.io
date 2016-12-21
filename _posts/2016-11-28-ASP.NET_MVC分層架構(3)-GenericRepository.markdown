@@ -1,0 +1,36 @@
+---
+layout: post
+title:  "ASP.NET MVC分層架構(3)-利用泛型(Generic)抽離Repository"
+date:   2016-11-28 13:49:31 +0800
+categories: Android
+---
+
+## 介紹
+基本的操作像是"CRUD"，除了操作的類別不同之外，其他幾乎都一樣，所以可以將相同的部分抽離，我們可以善用"泛型(Generic)"的特性來處理這一部分，因為怕類別的主鍵會不同，所以就採用Expression<Func<TEntity, bool>> 的方法，以傳入predicate參數的方式來解決，接著我們來實作Repository的抽離。  
+
+## IRepository.cs
+{% highlight C# %}
+namespace MVC.Models.Interface{	public interface IRepository<TEntity> : IDisposable        where TEntity : class	{		void Create(TEntity entity);		void Update(TEntity entity);       void Delete(TEntity entity);		TEntity Get(Expression<Func<TEntity, bool>> predicate);       IQueryable<TEntity> GetAll();       void SaveChanges();   }}
+{% endhighlight %}  
+##  Repository.cs  
+{% highlight C# %}
+public class GenericRepository<TEntity> : IRepository<TEntity>        where TEntity : class {    private DbContext _context    {        get;        set;    }    public GenericRepository()        : this(new ApplicationDbContext())    {    }    public GenericRepository(DbContext context)    {        if (context == null)        {            throw new ArgumentNullException("context");        }        _context = context;    }    public GenericRepository(ObjectContext context)    {        if (context == null)        {            throw new ArgumentNullException("context");        }        _context = new DbContext(context, true);    }    public void Create(TEntity entity)    {        if (entity == null)        {            throw new ArgumentNullException("entity");        }        else        {            _context.Set<TEntity>().Add(entity);            SaveChanges();        }    }    public void Update(TEntity entity)    {        if (entity == null)        {            throw new ArgumentNullException("entity");        }        else        {            _context.Entry(entity).State = EntityState.Modified;            SaveChanges();        }    }    public void Delete(TEntity entity)    {        if (entity == null)        {            throw new ArgumentNullException("entity");        }        else        {            _context.Entry(entity).State = EntityState.Deleted;            SaveChanges();        }    }    public TEntity Get(Expression<Func<TEntity, bool>> predicate)    {        return _context.Set<TEntity>().FirstOrDefault(predicate);    }    public IQueryable<TEntity> GetAll()    {        return _context.Set<TEntity>().AsQueryable();    }    public void SaveChanges()    {        _context.SaveChanges();    }    public void Dispose()    {        this.Dispose(true);        GC.SuppressFinalize(this);    }    protected virtual void Dispose(bool disposing)    {        if (disposing)        {            if (_context != null)            {                _context.Dispose();                _context = null;            }        }    }}
+{% endhighlight %}
+完成GenericRepository後，已經在GenericRepository的實作中涵蓋了ProjectRepository和StructureRepository所有的方法，所以我們就不需要ProjectRepository和StructureRepository，也不需要他們的介面了。
+
+## HomeController
+原本的Controller要修改成，使用IRepository與GenericRepository來做資料的存取，修改後的程式如下：
+{% highlight C# %}
+public class HomeController : Controller{    private readonly IRepository<Project> projectRepository;    public HomeController()    {        this.projectRepository = new GenericRepository<Project>();    }    public ActionResult Index()    {        var projects = projectRepository.GetAll();        var viewModel = new ProjectListViewModel();        viewModel.ProjectList = projects;        return View(viewModel);    }    public ActionResult Create()    {        var viewModel = new ProjectViewModel();        return View(viewModel);    }    public ActionResult Edit(Guid id)    {        var viewModel = new ProjectViewModel();        var model = projectRepository.Get(x => x.Id == id);        viewModel.Id = id;        viewModel.Name = model.Name;        return View("Create", viewModel);    }    [HttpPost]    public ActionResult Save(ProjectViewModel viewModel)    {        if (ModelState.IsValid)        {            if (viewModel.Id == Guid.Empty)            {                var model = new Project();                model.Id = Guid.NewGuid();                model.Name = viewModel.Name;                projectRepository.Create(model);            }            else            {                var model = projectRepository.Get(x => x.Id == viewModel.Id);                model.Name = viewModel.Name;                projectRepository.Update(model);            }            return RedirectToAction("Index");        }        return View("Create", viewModel);    }    public ActionResult Delete(Guid id)    {        var model = projectRepository.Get(x => x.Id == id);        projectRepository.Delete(model);        return RedirectToAction("Index");    }}
+{% endhighlight %}
+StructureContorller也是類似的修改方式，在兩個Controller的程式裡，原本是要使用IStructureRepository或是直接對資料庫做存取的方式，現在建立了IRepository和GenericRepository後，就不再需要用到之前所建立的Repository，將基本的資料操作抽離出來並使用泛型，這樣就不需要重複去建立基本的資料操作。
+
+
+
+
+
+[程式碼已放上Github](https://github.com/royshow0316/MVC3){:target='_blank'}
+
+[jekyll-docs]: http://jekyllrb.com/docs/home
+[jekyll-gh]:   https://github.com/jekyll/jekyll
+[jekyll-talk]: https://talk.jekyllrb.com/
