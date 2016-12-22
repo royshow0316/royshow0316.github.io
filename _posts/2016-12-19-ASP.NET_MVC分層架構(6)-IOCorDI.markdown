@@ -1,0 +1,97 @@
+---
+layout: post
+title:  "ASP.NET MVC分層架構(6)-IOCorDI"
+date:   2016-12-19 13:49:31 +0800
+categories: Asp.Net　MVC
+---
+
+## 介紹
+IOC的全名是Inversion of Control，中文是控制反轉；DI的全名是Dependency Injection，中文是依賴注入。在IOC/DI的Framework有很多，例如：Autofact, Windsor, Ninject...等。  
+我大概說明一下為什麼會需要IOC/DI，假設現在有一個系統，我想要看節目，但是播放節目有很多種方式，可以透過"TV"來播放，也可以透過"Network"來播放，未來也許還會有多種播放方式。現在，我需要透過"TV"這個物件，來執行"播放"這個方法，我需要new TV物件，再去呼叫TV.播放()。為了達到我的目的"播放"，我必須先將"TV"物件初始化，再呼叫TV.播放()，這樣就會發現，"播放"的抽象邏輯，就依賴於"TV"這個物件。我必須要設計一個類別叫做"TV"，並且做一個方法叫做"播放"來使用，這就是一般的相依性，而IOC就是要反轉這樣的相依性。一般的相依性就可以跑了，幹嘛要IOC呢？ 因為當科技進步後，從原本用TV播放，到後來用Network播放，希望可以把系統改成用Network來播放，系統和邏輯設計都不變，只要換播放的裝置從"TV"換成"Network"，可以發現這裡是方法相依於物件。而控制反轉就是，我的目的是"播放"，我只要輸入容器，讓容器去實作"播放"的方法，相依性就反轉過來了，我在乎的是"播放"，至於用什麼去播放，則看當時的需求，就不用再被物件綁住了。  
+可能有人會不知道怎麼樣才算是依賴，下圖就是一種直接依賴，如下圖：  
+![DependencySample](/image/ASP.NET_MVC(6)_IOCorDI/DependencySample.png){:class="img-responsive" height="300px" width="600px"}
+
+## 導入IOC/DI
+前面幾篇的程式碼還是直接依賴於實作的類別，但之前我們有建立介面，也就保持了點彈性，不同資料庫的資料存取，程式就會依照介面所設計的內容來實作，那麼系統日後假如要更換資料庫時就不需要重新改寫程式，不過這樣無法讓程式知道更換了不同的實作程式。這時候就可以導入IOC/DI Framework來解決這部分的問題。在Visual Studio的Nuget上可以找到並且已經整合好給ASP.NET MVC專案使用的組件，這次我們要用的是"Unity"版本是v4.0.1，如下圖：  
+![Nuget](/image/ASP.NET_MVC(6)_IOCorDI/Nuget.png){:class="img-responsive" height="500px" width="500px"}
+在Web專案上選擇"管理Nuget套件"，並解輸入unity搜尋後下載第一個導入就好了，如下圖：  
+![NugetInstall](/image/ASP.NET_MVC(6)_IOCorDI/NugetInstall.png){:class="img-responsive" height="300px" width="700px"}  
+安裝完成之後會在Web專案的App_Start目錄下新增UnityConfig.cs和UnityMvcActivator.cs兩個檔案，如下圖：  
+![Unity](/image/ASP.NET_MVC(6)_IOCorDI/Unity.png){:class="img-responsive" height="300px" width="300px"} 
+
+## 修改ProjectService
+這邊原先的作法就是直接在程式中去建立一個GenericRepository<Project>的實例，程式如下：  
+{% highlight C# %}
+private readonly IRepository<Project> repository = new GenericRepository<Project>();
+{% endhighlight %}  
+現在要解除這種直接依賴的關係，之後建立實例的工作就交給Unity處理，在ProjectService裡增加一個含有IRepository<Project>參數的建構式，程式如下：  
+{% highlight C# %}
+private readonly IRepository<Project> _repository;
+public ProjectService(IRepository<Project> repository){	this._repository = repository;}
+{% endhighlight %}
+
+## 修改HomeController
+Service層的資料存取是透過Model層，Web專案的商業邏輯操作是透過Service層，所以Web專案裡的有使用到Service的地方要做修改，程式如下：  
+{% highlight C# %}
+public class HomeController : Controller{	private readonly IProjectService _projectService;	public HomeController(IProjectService projectService)	{		this._projectService = projectService;	}	public ActionResult Index()	{		var projects = _projectService.GetAll();		var viewModel = new ProjectListViewModel();		viewModel.ProjectList = projects;		return View(viewModel);	}	public ActionResult Create()	{		var viewModel = new ProjectViewModel();		return View(viewModel);	}	public ActionResult Edit(Guid id)	{		var viewModel = new ProjectViewModel();		var model = _projectService.GetById(id);		viewModel.Id = id;		viewModel.Name = model.Name;		return View("Create", viewModel);	}	[HttpPost]	public ActionResult Save(ProjectViewModel viewModel)	{		if (ModelState.IsValid)		{			if (viewModel.Id == Guid.Empty)			{				var model = new Project();				model.Id = Guid.NewGuid();				model.Name = viewModel.Name;				_projectService.Create(model);			}			else			{				var model = _projectService.GetById(viewModel.Id);				model.Name = viewModel.Name;				_projectService.Update(model);			}			return RedirectToAction("Index");		}		return View("Create", viewModel);	}	public ActionResult Delete(Guid id)	{		_projectService.Delete(id);		return RedirectToAction("Index");	}}
+{% endhighlight %}
+
+## UnityConfig修改
+到UnityConfig的RegisterTypes方法內去增加註冊的介面類別以及要實作的類別，程式如下：  
+{% highlight C# %}
+public static void RegisterTypes(IUnityContainer container){	#region Repository	container.RegisterType<IRepository<Project>, GenericRepository<Project>>();	container.RegisterType<IRepository<Structure>, GenericRepository<Structure>>();	#endregion	#region Service	container.RegisterType<IProjectService, ProjectService>();	container.RegisterType<IStructureService, StructureService>();	#endregion	#region Identity	container.RegisterType<IUserStore<ApplicationUser>, UserStore<ApplicationUser>>();	container.RegisterType<UserManager<ApplicationUser>>();	container.RegisterType<DbContext, ApplicationDbContext>();	container.RegisterType<ApplicationUserManager>();	container.RegisterType<AccountController>(new InjectionConstructor());	container.RegisterType<ManageController>(new InjectionConstructor());	#endregion}
+{% endhighlight %}
+
+## GenericRepository.cs修改
+在GenericRepository.cs裡有兩個建構式是有傳入參數的，雖然說兩個傳入參數的型別不同，但是對於Unity來說，這兩個沒辦法去分別，因為建構式的傳入參數個數都一樣，在 Unity去做型別註冊時就根本不知道該用哪一個建構式，所以先刪除以ObjectContext為輸入參數的建構式。  
+
+## 建立Db工廠
+到這裡會發現在SQL Server Management Studio(SSMS)修改完資料之後回到網頁，發現網頁並沒有顯示修改的資料，其實問題在於RegisterTypes這個方法是static的，因為在靜態方法裡所建立的DbContext實例都將會維持同一個，直到該Application結束，程式執行中的DbContext並不會去讀取資料庫的資料，而是讀取在記憶體裡DbContext的資料。我們可以另外建立一個類別與方法來做DbContext實例，然後再RegisterType裡註冊，先來建立工廠介面，程式如下：  
+IDbContextFactory
+{% highlight C# %}
+public interface IDbContextFactory{	ApplicationDbContext GetDbContext();}
+{% endhighlight %}  
+再來實作介面，建立工廠實作：  
+{% highlight C# %}
+public class DbContextFactory : IDbContextFactory{	private ApplicationDbContext dbContext;
+
+	public DbContextFactory()
+	{
+	}
+
+	private ApplicationDbContext DBContext
+	{
+		get
+		{
+			if (this.dbContext == null)
+			{
+				Type type = typeof(ApplicationDbContext);
+				this.dbContext = (ApplicationDbContext)Activator.CreateInstance(type);
+			}
+			return dbContext;
+		}
+	}
+	
+	public ApplicationDbContext GetDbContext()
+	{
+		return DBContext;
+	}}
+{% endhighlight %}
+再到UnityConfig的RegisterTypes加入註冊，程式如下：  
+{% highlight C# %}
+container.RegisterType<IDbContextFactory, DbContextFactory>(new PerRequestLifetimeManager());
+{% endhighlight %}  
+然後GenericRepository也要修改，因為GenericRepository有用到DbContext，現在要改成使用IDbContextFactory，程式如下：  
+{% highlight C# %}
+public class GenericRepository<TEntity> : IRepository<TEntity>        where TEntity : class {
+	public DbContext _context { get; set; }	public GenericRepository()	{		this._context = new ApplicationDbContext();	}	public GenericRepository(IDbContextFactory factory)	{		if (factory == null)		{			throw new ArgumentNullException("factory");		}		_context = factory.GetDbContext();	}
+}
+{% endhighlight %}
+
+到這裡我們完成了IOC/DI的導入，藉由這樣的改變，讓原本Service層一定要某個 Repository物件或是Controller一定要某個Service的地方可以解除直接依賴的關係，在日後系統做調整或是抽換的時候就不用修改程式或是再去重複建立一個相同結構的專案，這也就是我們一開始所強調的彈性。
+
+[程式碼已放上Github](https://github.com/royshow0316/MVC6){:target='_blank'}
+
+[jekyll-docs]: http://jekyllrb.com/docs/home
+[jekyll-gh]:   https://github.com/jekyll/jekyll
+[jekyll-talk]: https://talk.jekyllrb.com/

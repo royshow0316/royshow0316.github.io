@@ -37,7 +37,7 @@ public class ProjectService : IProjectService{    private readonly IRepository
 public class HomeController : Controller{	private readonly IProjectService projectService;	public HomeController()	{		this.projectService = new ProjectService();	}	public ActionResult Index()	{		var projects = projectService.GetAll();		var viewModel = new ProjectListViewModel();		viewModel.ProjectList = projects;		return View(viewModel);	}	public ActionResult Create()	{		var viewModel = new ProjectViewModel();		return View(viewModel);	}	public ActionResult Edit(Guid id)	{		var viewModel = new ProjectViewModel();		var model = projectService.GetById(id);		viewModel.Id = id;		viewModel.Name = model.Name;		return View("Create", viewModel);	}	[HttpPost]	public ActionResult Save(ProjectViewModel viewModel)	{		if (ModelState.IsValid)		{			if (viewModel.Id == Guid.Empty)			{				var model = new Project();				model.Id = Guid.NewGuid();				model.Name = viewModel.Name;				projectService.Create(model);			}			else			{				var model = projectService.GetById(viewModel.Id);				model.Name = viewModel.Name;				projectService.Update(model);			}			return RedirectToAction("Index");		}		return View("Create", viewModel);	}	public ActionResult Delete(Guid id)	{		projectService.Delete(id);		return RedirectToAction("Index");	}}
 {% endhighlight %}
 將程式編譯執行，看是不是可以正常運作。
-下一篇要加入IOC(Inversion of Control)/DI(Dependency Injection)或稱物件反轉/依賴注入，此功能是一個用來降低物件之間耦合性的設計原則。
+下一篇要加入IOC(Inversion of Control)/DI(Dependency Injection)或稱控制反轉/依賴注入，此功能是一個用來降低物件之間耦合性的設計原則。
 
 [程式碼已放上Github](https://github.com/royshow0316/MVC5){:target='_blank'}
 

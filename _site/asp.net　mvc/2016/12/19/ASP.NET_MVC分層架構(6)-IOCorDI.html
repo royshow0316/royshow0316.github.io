@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>
+    八蛋的程式派對 | ASP.NET MVC分層架構(6)-IOCorDI
+  </title>
+  <meta name="description" content="介紹 IOC的全名是Inversion of Control，中文是控制反轉；DI的全名是Dependency Injection，中文是依賴注入。在IOC/DI的Framework有很多，例如：Autofact, Windsor, Ninject…等。 我大概說明一下為什麼會需要IOC/DI，假設現在有一個系統...">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royshow.github.io//asp.net%E3%80%80mvc/2016/12/19/ASP.NET_MVC%E5%88%86%E5%B1%A4%E6%9E%B6%E6%A7%8B(6)-IOCorDI.html">
+  <link rel="alternate" type="application/rss+xml" title="八蛋的程式派對" href="http://royshow.github.io//feed.xml">
+
+  <style>
+    @media screen and (min-width:600px) {
+      body {
+        width: 90%;
+        margin-left: 5%;
+      }
+    }
+    @media screen and (min-width:900px) {
+      body {
+        width: 80%;
+        margin-left: 10%;
+      }
+    }
+    @media screen and (min-width:1200px) {
+      body {
+        width: 70%;
+        margin-left: 15%;
+      }
+    }
+    @media screen and (min-width:1500px) {
+      body {
+        width: 60%;
+        margin-left: 20%;
+      }
+    }
+  </style>
+</head>
+  <div style="position:absolute;left:0"; style="background-color: #34352D">
+    
+  </div>
+  <body style="background-image: url('/image/background.png'); background-repeat: repeat">
+    <div align="center" style="background-color: #34352D; overflow: hidden">
+      <script type="text/javascript" src="//js1.bloggerads.net/ShowBanner.aspx?blogid=20161103000005"></script>
+    </div>
+    <div style="background-color: #eeeeee;">
+      <header class="site-header" role="banner">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">
+      <img src="/image/egg.png" height="24px" style="vertical-align: baseline" />
+      八蛋的程式派對
+    </a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+        
+          
+          <a class="page-link" href="/">文章列表</a>
+          
+        
+          
+        
+          
+          <a class="page-link" href="/about/">關於</a>
+          
+        
+          
+          <a class="page-link" href="/categories/">類別</a>
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+      <main class="page-content" aria-label="Content">
+          <div class="wrapper">
+            <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">ASP.NET MVC分層架構(6)-IOCorDI</h1>
+    <p class="post-meta">
+      <time datetime="2016-12-19T13:49:31+08:00" itemprop="datePublished">
+        Dec 19, 2016
+      </time>
+      &nbsp;
+      <span class="categories">類別:
+        
+        <a href="/categories/#Asp.Net　MVC" title="Asp.Net　MVC">Asp.Net　MVC</a>&nbsp;
+        </span>
+      
+      &nbsp;
+      <span class="tags">標籤:
+        </span>
+      
+    </p>
+  </header>
+
+  <div class="post-content" itemprop="articleBody">
+    <h2 id="section">介紹</h2>
+<p>IOC的全名是Inversion of Control，中文是控制反轉；DI的全名是Dependency Injection，中文是依賴注入。在IOC/DI的Framework有很多，例如：Autofact, Windsor, Ninject…等。<br />
+我大概說明一下為什麼會需要IOC/DI，假設現在有一個系統，我想要看節目，但是播放節目有很多種方式，可以透過”TV”來播放，也可以透過”Network”來播放，未來也許還會有多種播放方式。現在，我需要透過”TV”這個物件，來執行”播放”這個方法，我需要new TV物件，再去呼叫TV.播放()。為了達到我的目的”播放”，我必須先將”TV”物件初始化，再呼叫TV.播放()，這樣就會發現，”播放”的抽象邏輯，就依賴於”TV”這個物件。我必須要設計一個類別叫做”TV”，並且做一個方法叫做”播放”來使用，這就是一般的相依性，而IOC就是要反轉這樣的相依性。一般的相依性就可以跑了，幹嘛要IOC呢？ 因為當科技進步後，從原本用TV播放，到後來用Network播放，希望可以把系統改成用Network來播放，系統和邏輯設計都不變，只要換播放的裝置從”TV”換成”Network”，可以發現這裡是方法相依於物件。而控制反轉就是，我的目的是”播放”，我只要輸入容器，讓容器去實作”播放”的方法，相依性就反轉過來了，我在乎的是”播放”，至於用什麼去播放，則看當時的需求，就不用再被物件綁住了。<br />
+可能有人會不知道怎麼樣才算是依賴，下圖就是一種直接依賴，如下圖：<br />
+<img src="/image/ASP.NET_MVC(6)_IOCorDI/DependencySample.png" alt="DependencySample" class="img-responsive" height="300px" width="600px" /></p>
+
+<h2 id="iocdi">導入IOC/DI</h2>
+<p>前面幾篇的程式碼還是直接依賴於實作的類別，但之前我們有建立介面，也就保持了點彈性，不同資料庫的資料存取，程式就會依照介面所設計的內容來實作，那麼系統日後假如要更換資料庫時就不需要重新改寫程式，不過這樣無法讓程式知道更換了不同的實作程式。這時候就可以導入IOC/DI Framework來解決這部分的問題。在Visual Studio的Nuget上可以找到並且已經整合好給ASP.NET MVC專案使用的組件，這次我們要用的是”Unity”版本是v4.0.1，如下圖：<br />
+<img src="/image/ASP.NET_MVC(6)_IOCorDI/Nuget.png" alt="Nuget" class="img-responsive" height="500px" width="500px" />
+在Web專案上選擇”管理Nuget套件”，並解輸入unity搜尋後下載第一個導入就好了，如下圖：<br />
+<img src="/image/ASP.NET_MVC(6)_IOCorDI/NugetInstall.png" alt="NugetInstall" class="img-responsive" height="300px" width="700px" /><br />
+安裝完成之後會在Web專案的App_Start目錄下新增UnityConfig.cs和UnityMvcActivator.cs兩個檔案，如下圖：<br />
+<img src="/image/ASP.NET_MVC(6)_IOCorDI/Unity.png" alt="Unity" class="img-responsive" height="300px" width="300px" /></p>
+
+<h2 id="projectservice">修改ProjectService</h2>
+<p>這邊原先的作法就是直接在程式中去建立一個GenericRepository<Project>的實例，程式如下：</Project></p>
+
+<figure class="highlight"><pre><code class="language-c#" data-lang="c#"><span class="k">private</span> <span class="k">readonly</span> <span class="n">IRepository</span><span class="p">&lt;</span><span class="n">Project</span><span class="p">&gt;</span> <span class="n">repository</span> <span class="p">=</span> <span class="k">new</span> <span class="n">GenericRepository</span><span class="p">&lt;</span><span class="n">Project</span><span class="p">&gt;();</span></code></pre></figure>
+
+<p>現在要解除這種直接依賴的關係，之後建立實例的工作就交給Unity處理，在ProjectService裡增加一個含有IRepository<Project>參數的建構式，程式如下：</Project></p>
+
+<figure class="highlight"><pre><code class="language-c#" data-lang="c#"><span class="k">private</span> <span class="k">readonly</span> <span class="n">IRepository</span><span class="p">&lt;</span><span class="n">Project</span><span class="p">&gt;</span> <span class="n">_repository</span><span class="p">;</span>
+<span class="k">public</span> <span class="nf">ProjectService</span><span class="p">(</span><span class="n">IRepository</span><span class="p">&lt;</span><span class="n">Project</span><span class="p">&gt;</span> <span class="n">repository</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="k">this</span><span class="p">.</span><span class="n">_repository</span> <span class="p">=</span> <span class="n">repository</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<h2 id="homecontroller">修改HomeController</h2>
+<p>Service層的資料存取是透過Model層，Web專案的商業邏輯操作是透過Service層，所以Web專案裡的有使用到Service的地方要做修改，程式如下：</p>
+
+<figure class="highlight"><pre><code class="language-c#" data-lang="c#"><span class="k">public</span> <span class="k">class</span> <span class="nc">HomeController</span> <span class="p">:</span> <span class="n">Controller</span>
+<span class="p">{</span>
+	<span class="k">private</span> <span class="k">readonly</span> <span class="n">IProjectService</span> <span class="n">_projectService</span><span class="p">;</span>
+
+	<span class="k">public</span> <span class="nf">HomeController</span><span class="p">(</span><span class="n">IProjectService</span> <span class="n">projectService</span><span class="p">)</span>
+	<span class="p">{</span>
+		<span class="k">this</span><span class="p">.</span><span class="n">_projectService</span> <span class="p">=</span> <span class="n">projectService</span><span class="p">;</span>
+	<span class="p">}</span>
+
+	<span class="k">public</span> <span class="n">ActionResult</span> <span class="nf">Index</span><span class="p">()</span>
+	<span class="p">{</span>
+		<span class="kt">var</span> <span class="n">projects</span> <span class="p">=</span> <span class="n">_projectService</span><span class="p">.</span><span class="nf">GetAll</span><span class="p">();</span>
+		<span class="kt">var</span> <span class="n">viewModel</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">ProjectListViewModel</span><span class="p">();</span>
+		<span class="n">viewModel</span><span class="p">.</span><span class="n">ProjectList</span> <span class="p">=</span> <span class="n">projects</span><span class="p">;</span>
+
+		<span class="k">return</span> <span class="nf">View</span><span class="p">(</span><span class="n">viewModel</span><span class="p">);</span>
+	<span class="p">}</span>
+
+	<span class="k">public</span> <span class="n">ActionResult</span> <span class="nf">Create</span><span class="p">()</span>
+	<span class="p">{</span>
+		<span class="kt">var</span> <span class="n">viewModel</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">ProjectViewModel</span><span class="p">();</span>
+		<span class="k">return</span> <span class="nf">View</span><span class="p">(</span><span class="n">viewModel</span><span class="p">);</span>
+	<span class="p">}</span>
+
+	<span class="k">public</span> <span class="n">ActionResult</span> <span class="nf">Edit</span><span class="p">(</span><span class="n">Guid</span> <span class="n">id</span><span class="p">)</span>
+	<span class="p">{</span>
+		<span class="kt">var</span> <span class="n">viewModel</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">ProjectViewModel</span><span class="p">();</span>
+		<span class="kt">var</span> <span class="n">model</span> <span class="p">=</span> <span class="n">_projectService</span><span class="p">.</span><span class="nf">GetById</span><span class="p">(</span><span class="n">id</span><span class="p">);</span>
+		<span class="n">viewModel</span><span class="p">.</span><span class="n">Id</span> <span class="p">=</span> <span class="n">id</span><span class="p">;</span>
+		<span class="n">viewModel</span><span class="p">.</span><span class="n">Name</span> <span class="p">=</span> <span class="n">model</span><span class="p">.</span><span class="n">Name</span><span class="p">;</span>
+
+		<span class="k">return</span> <span class="nf">View</span><span class="p">(</span><span class="s">"Create"</span><span class="p">,</span> <span class="n">viewModel</span><span class="p">);</span>
+	<span class="p">}</span>
+
+	<span class="p">[</span><span class="n">HttpPost</span><span class="p">]</span>
+	<span class="k">public</span> <span class="n">ActionResult</span> <span class="nf">Save</span><span class="p">(</span><span class="n">ProjectViewModel</span> <span class="n">viewModel</span><span class="p">)</span>
+	<span class="p">{</span>
+		<span class="k">if</span> <span class="p">(</span><span class="n">ModelState</span><span class="p">.</span><span class="n">IsValid</span><span class="p">)</span>
+		<span class="p">{</span>
+			<span class="k">if</span> <span class="p">(</span><span class="n">viewModel</span><span class="p">.</span><span class="n">Id</span> <span class="p">==</span> <span class="n">Guid</span><span class="p">.</span><span class="n">Empty</span><span class="p">)</span>
+			<span class="p">{</span>
+				<span class="kt">var</span> <span class="n">model</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">Project</span><span class="p">();</span>
+				<span class="n">model</span><span class="p">.</span><span class="n">Id</span> <span class="p">=</span> <span class="n">Guid</span><span class="p">.</span><span class="nf">NewGuid</span><span class="p">();</span>
+				<span class="n">model</span><span class="p">.</span><span class="n">Name</span> <span class="p">=</span> <span class="n">viewModel</span><span class="p">.</span><span class="n">Name</span><span class="p">;</span>
+				<span class="n">_projectService</span><span class="p">.</span><span class="nf">Create</span><span class="p">(</span><span class="n">model</span><span class="p">);</span>
+			<span class="p">}</span>
+			<span class="k">else</span>
+			<span class="p">{</span>
+				<span class="kt">var</span> <span class="n">model</span> <span class="p">=</span> <span class="n">_projectService</span><span class="p">.</span><span class="nf">GetById</span><span class="p">(</span><span class="n">viewModel</span><span class="p">.</span><span class="n">Id</span><span class="p">);</span>
+				<span class="n">model</span><span class="p">.</span><span class="n">Name</span> <span class="p">=</span> <span class="n">viewModel</span><span class="p">.</span><span class="n">Name</span><span class="p">;</span>
+				<span class="n">_projectService</span><span class="p">.</span><span class="nf">Update</span><span class="p">(</span><span class="n">model</span><span class="p">);</span>
+			<span class="p">}</span>
+			<span class="k">return</span> <span class="nf">RedirectToAction</span><span class="p">(</span><span class="s">"Index"</span><span class="p">);</span>
+		<span class="p">}</span>
+		<span class="k">return</span> <span class="nf">View</span><span class="p">(</span><span class="s">"Create"</span><span class="p">,</span> <span class="n">viewModel</span><span class="p">);</span>
+	<span class="p">}</span>
+
+	<span class="k">public</span> <span class="n">ActionResult</span> <span class="nf">Delete</span><span class="p">(</span><span class="n">Guid</span> <span class="n">id</span><span class="p">)</span>
+	<span class="p">{</span>
+		<span class="n">_projectService</span><span class="p">.</span><span class="nf">Delete</span><span class="p">(</span><span class="n">id</span><span class="p">);</span>
+		<span class="k">return</span> <span class="nf">RedirectToAction</span><span class="p">(</span><span class="s">"Index"</span><span class="p">);</span>
+	<span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<h2 id="unityconfig">UnityConfig修改</h2>
+<p>到UnityConfig的RegisterTypes方法內去增加註冊的介面類別以及要實作的類別，程式如下：</p>
+
+<figure class="highlight"><pre><code class="language-c#" data-lang="c#"><span class="k">public</span> <span class="k">static</span> <span class="k">void</span> <span class="nf">RegisterTypes</span><span class="p">(</span><span class="n">IUnityContainer</span> <span class="n">container</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="err">#</span><span class="n">region</span> <span class="n">Repository</span>
+	<span class="n">container</span><span class="p">.</span><span class="n">RegisterType</span><span class="p">&lt;</span><span class="n">IRepository</span><span class="p">&lt;</span><span class="n">Project</span><span class="p">&gt;,</span> <span class="n">GenericRepository</span><span class="p">&lt;</span><span class="n">Project</span><span class="p">&gt;&gt;();</span>
+	<span class="n">container</span><span class="p">.</span><span class="n">RegisterType</span><span class="p">&lt;</span><span class="n">IRepository</span><span class="p">&lt;</span><span class="n">Structure</span><span class="p">&gt;,</span> <span class="n">GenericRepository</span><span class="p">&lt;</span><span class="n">Structure</span><span class="p">&gt;&gt;();</span>
+	<span class="err">#</span><span class="n">endregion</span>
+
+	<span class="err">#</span><span class="n">region</span> <span class="n">Service</span>
+	<span class="n">container</span><span class="p">.</span><span class="n">RegisterType</span><span class="p">&lt;</span><span class="n">IProjectService</span><span class="p">,</span> <span class="n">ProjectService</span><span class="p">&gt;();</span>
+	<span class="n">container</span><span class="p">.</span><span class="n">RegisterType</span><span class="p">&lt;</span><span class="n">IStructureService</span><span class="p">,</span> <span class="n">StructureService</span><span class="p">&gt;();</span>
+	<span class="err">#</span><span class="n">endregion</span>
+
+	<span class="err">#</span><span class="n">region</span> <span class="n">Identity</span>
+	<span class="n">container</span><span class="p">.</span><span class="n">RegisterType</span><span class="p">&lt;</span><span class="n">IUserStore</span><span class="p">&lt;</span><span class="n">ApplicationUser</span><span class="p">&gt;,</span> <span class="n">UserStore</span><span class="p">&lt;</span><span class="n">ApplicationUser</span><span class="p">&gt;&gt;();</span>
+	<span class="n">container</span><span class="p">.</span><span class="n">RegisterType</span><span class="p">&lt;</span><span class="n">UserManager</span><span class="p">&lt;</span><span class="n">ApplicationUser</span><span class="p">&gt;&gt;();</span>
+	<span class="n">container</span><span class="p">.</span><span class="n">RegisterType</span><span class="p">&lt;</span><span class="n">DbContext</span><span class="p">,</span> <span class="n">ApplicationDbContext</span><span class="p">&gt;();</span>
+	<span class="n">container</span><span class="p">.</span><span class="n">RegisterType</span><span class="p">&lt;</span><span class="n">ApplicationUserManager</span><span class="p">&gt;();</span>
+	<span class="n">container</span><span class="p">.</span><span class="n">RegisterType</span><span class="p">&lt;</span><span class="n">AccountController</span><span class="p">&gt;(</span><span class="k">new</span> <span class="nf">InjectionConstructor</span><span class="p">());</span>
+	<span class="n">container</span><span class="p">.</span><span class="n">RegisterType</span><span class="p">&lt;</span><span class="n">ManageController</span><span class="p">&gt;(</span><span class="k">new</span> <span class="nf">InjectionConstructor</span><span class="p">());</span>
+	<span class="err">#</span><span class="n">endregion</span>
+<span class="p">}</span></code></pre></figure>
+
+<h2 id="genericrepositorycs">GenericRepository.cs修改</h2>
+<p>在GenericRepository.cs裡有兩個建構式是有傳入參數的，雖然說兩個傳入參數的型別不同，但是對於Unity來說，這兩個沒辦法去分別，因為建構式的傳入參數個數都一樣，在 Unity去做型別註冊時就根本不知道該用哪一個建構式，所以先刪除以ObjectContext為輸入參數的建構式。</p>
+
+<h2 id="db">建立Db工廠</h2>
+<p>到這裡會發現在SQL Server Management Studio(SSMS)修改完資料之後回到網頁，發現網頁並沒有顯示修改的資料，其實問題在於RegisterTypes這個方法是static的，因為在靜態方法裡所建立的DbContext實例都將會維持同一個，直到該Application結束，程式執行中的DbContext並不會去讀取資料庫的資料，而是讀取在記憶體裡DbContext的資料。我們可以另外建立一個類別與方法來做DbContext實例，然後再RegisterType裡註冊，先來建立工廠介面，程式如下：<br />
+IDbContextFactory</p>
+
+<figure class="highlight"><pre><code class="language-c#" data-lang="c#"><span class="k">public</span> <span class="k">interface</span> <span class="n">IDbContextFactory</span>
+<span class="p">{</span>
+	<span class="n">ApplicationDbContext</span> <span class="nf">GetDbContext</span><span class="p">();</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>再來實作介面，建立工廠實作：</p>
+
+<figure class="highlight"><pre><code class="language-c#" data-lang="c#"><span class="k">public</span> <span class="k">class</span> <span class="nc">DbContextFactory</span> <span class="p">:</span> <span class="n">IDbContextFactory</span>
+<span class="p">{</span>
+	<span class="k">private</span> <span class="n">ApplicationDbContext</span> <span class="n">dbContext</span><span class="p">;</span>
+
+	<span class="k">public</span> <span class="nf">DbContextFactory</span><span class="p">()</span>
+	<span class="p">{</span>
+	<span class="p">}</span>
+
+	<span class="k">private</span> <span class="n">ApplicationDbContext</span> <span class="n">DBContext</span>
+	<span class="p">{</span>
+		<span class="k">get</span>
+		<span class="p">{</span>
+			<span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">dbContext</span> <span class="p">==</span> <span class="k">null</span><span class="p">)</span>
+			<span class="p">{</span>
+				<span class="n">Type</span> <span class="n">type</span> <span class="p">=</span> <span class="k">typeof</span><span class="p">(</span><span class="n">ApplicationDbContext</span><span class="p">);</span>
+				<span class="k">this</span><span class="p">.</span><span class="n">dbContext</span> <span class="p">=</span> <span class="p">(</span><span class="n">ApplicationDbContext</span><span class="p">)</span><span class="n">Activator</span><span class="p">.</span><span class="nf">CreateInstance</span><span class="p">(</span><span class="n">type</span><span class="p">);</span>
+			<span class="p">}</span>
+			<span class="k">return</span> <span class="n">dbContext</span><span class="p">;</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+	
+	<span class="k">public</span> <span class="n">ApplicationDbContext</span> <span class="nf">GetDbContext</span><span class="p">()</span>
+	<span class="p">{</span>
+		<span class="k">return</span> <span class="n">DBContext</span><span class="p">;</span>
+	<span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>再到UnityConfig的RegisterTypes加入註冊，程式如下：</p>
+
+<figure class="highlight"><pre><code class="language-c#" data-lang="c#"><span class="n">container</span><span class="p">.</span><span class="n">RegisterType</span><span class="p">&lt;</span><span class="n">IDbContextFactory</span><span class="p">,</span> <span class="n">DbContextFactory</span><span class="p">&gt;(</span><span class="k">new</span> <span class="nf">PerRequestLifetimeManager</span><span class="p">());</span></code></pre></figure>
+
+<p>然後GenericRepository也要修改，因為GenericRepository有用到DbContext，現在要改成使用IDbContextFactory，程式如下：</p>
+
+<figure class="highlight"><pre><code class="language-c#" data-lang="c#"><span class="k">public</span> <span class="k">class</span> <span class="nc">GenericRepository</span><span class="p">&lt;</span><span class="n">TEntity</span><span class="p">&gt;</span> <span class="p">:</span> <span class="n">IRepository</span><span class="p">&lt;</span><span class="n">TEntity</span><span class="p">&gt;</span>
+        <span class="k">where</span> <span class="n">TEntity</span> <span class="p">:</span> <span class="k">class</span> 
+<span class="err">{</span>
+	<span class="nc">public</span> <span class="n">DbContext</span> <span class="n">_context</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+
+	<span class="k">public</span> <span class="nf">GenericRepository</span><span class="p">()</span>
+	<span class="p">{</span>
+		<span class="k">this</span><span class="p">.</span><span class="n">_context</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">ApplicationDbContext</span><span class="p">();</span>
+	<span class="p">}</span>
+
+	<span class="k">public</span> <span class="nf">GenericRepository</span><span class="p">(</span><span class="n">IDbContextFactory</span> <span class="n">factory</span><span class="p">)</span>
+	<span class="p">{</span>
+		<span class="k">if</span> <span class="p">(</span><span class="n">factory</span> <span class="p">==</span> <span class="k">null</span><span class="p">)</span>
+		<span class="p">{</span>
+			<span class="k">throw</span> <span class="k">new</span> <span class="nf">ArgumentNullException</span><span class="p">(</span><span class="s">"factory"</span><span class="p">);</span>
+		<span class="p">}</span>
+		<span class="n">_context</span> <span class="p">=</span> <span class="n">factory</span><span class="p">.</span><span class="nf">GetDbContext</span><span class="p">();</span>
+	<span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>到這裡我們完成了IOC/DI的導入，藉由這樣的改變，讓原本Service層一定要某個 Repository物件或是Controller一定要某個Service的地方可以解除直接依賴的關係，在日後系統做調整或是抽換的時候就不用修改程式或是再去重複建立一個相同結構的專案，這也就是我們一開始所強調的彈性。</p>
+
+<p><a href="https://github.com/royshow0316/MVC6" target="_blank">程式碼已放上Github</a></p>
+
+
+  </div>
+
+</article>
+
+          </div>
+      </main>
+      <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <!--<h2 class="footer-heading">八蛋的程式派對</h2>-->
+    <p></p>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1" align="center">
+        <ul class="contact-list">
+          <!-- <li>八蛋的程式派對</li> -->
+          <li>聯絡我</li>
+          <li><a href="mailto:royshow0316@gmail.com">royshow0316@gmail.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-2" align="center">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/royshow0316"><span class="icon icon--github"><svg viewBox="0 0 16 16"><path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/></svg>
+</span><span class="username">royshow0316</span></a>
+
+          </li>
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3" align="center">
+        <!-- <p>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.
+</p> -->
+        <p>Powered by <a href="https://jekyllrb.com/" target="_blank">Jekyll</a>
+        ,  Hosted by <a href="https://github.com/" target="_blank">Github</a>
+        </p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+    </div>
+  </body>
+
+</html>
