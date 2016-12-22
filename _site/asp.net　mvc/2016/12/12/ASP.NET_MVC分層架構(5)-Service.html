@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>
+    八蛋的程式派對 | ASP.NET MVC分層架構(5)-加入Service層
+  </title>
+  <meta name="description" content="介紹 在Repository層裡，主要是用來操作資料的存取，取得資料後的一些操作，要做判斷處理的就不適合放在Repository層，而Repository為提供給Service層使用，Controller主要為系統流程的控制，依據傳入的需求來決定要存取哪些資料，並且決定要選擇View以回應到需求端，資料的存取交給...">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royshow.github.io//asp.net%E3%80%80mvc/2016/12/12/ASP.NET_MVC%E5%88%86%E5%B1%A4%E6%9E%B6%E6%A7%8B(5)-Service.html">
+  <link rel="alternate" type="application/rss+xml" title="八蛋的程式派對" href="http://royshow.github.io//feed.xml">
+
+  <style>
+    @media screen and (min-width:600px) {
+      body {
+        width: 90%;
+        margin-left: 5%;
+      }
+    }
+    @media screen and (min-width:900px) {
+      body {
+        width: 80%;
+        margin-left: 10%;
+      }
+    }
+    @media screen and (min-width:1200px) {
+      body {
+        width: 70%;
+        margin-left: 15%;
+      }
+    }
+    @media screen and (min-width:1500px) {
+      body {
+        width: 60%;
+        margin-left: 20%;
+      }
+    }
+  </style>
+</head>
+  <div style="position:absolute;left:0"; style="background-color: #34352D">
+    
+  </div>
+  <body style="background-image: url('/image/background.png'); background-repeat: repeat">
+    <div align="center" style="background-color: #34352D; overflow: hidden">
+      <script type="text/javascript" src="//js1.bloggerads.net/ShowBanner.aspx?blogid=20161103000005"></script>
+    </div>
+    <div style="background-color: #eeeeee;">
+      <header class="site-header" role="banner">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">
+      <img src="/image/egg.png" height="24px" style="vertical-align: baseline" />
+      八蛋的程式派對
+    </a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+        
+          
+          <a class="page-link" href="/">文章列表</a>
+          
+        
+          
+        
+          
+          <a class="page-link" href="/about/">關於</a>
+          
+        
+          
+          <a class="page-link" href="/categories/">類別</a>
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+      <main class="page-content" aria-label="Content">
+          <div class="wrapper">
+            <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">ASP.NET MVC分層架構(5)-加入Service層</h1>
+    <p class="post-meta">
+      <time datetime="2016-12-12T13:49:31+08:00" itemprop="datePublished">
+        Dec 12, 2016
+      </time>
+      &nbsp;
+      <span class="categories">類別:
+        
+        <a href="/categories/#Asp.Net　MVC" title="Asp.Net　MVC">Asp.Net　MVC</a>&nbsp;
+        </span>
+      
+      &nbsp;
+      <span class="tags">標籤:
+        </span>
+      
+    </p>
+  </header>
+
+  <div class="post-content" itemprop="articleBody">
+    <h2 id="section">介紹</h2>
+<p>在Repository層裡，主要是用來操作資料的存取，取得資料後的一些操作，要做判斷處理的就不適合放在Repository層，而Repository為提供給Service層使用，Controller主要為系統流程的控制，依據傳入的需求來決定要存取哪些資料，並且決定要選擇View以回應到需求端，資料的存取交給Repository做處理，而商業邏輯的處理不適合放在Controller，如果在Controller中放入商業邏輯再加上系統流程控制混在一起，Controller就會很肥大且複雜又難以維護。所以將商業邏輯放到Service層，Service層可以使用repository層所提供的服務來存取資料，Controller層則是透過Service層來做資料的處理，而不直接使用Repository。</p>
+
+<h2 id="service">建立Service專案</h2>
+<p>在方案中建立一個Service的類別專案，如下圖：<br />
+<img src="/image/ASP.NET_MVC(5)_Service/CreateServiceProject.png" alt="CreateServiceProject" class="img-responsive" height="400px" width="200px" /><br />
+在Service層新增一個Interface資料夾，用來放置各個Service的Interface，而Service專案要加入SQLModel專案的參考，這樣才能知道要存取什麼資料，如下圖：<br />
+<img src="/image/ASP.NET_MVC(5)_Service/ServiceReferenceInterface.png" alt="ServiceReferenceInterface" class="img-responsive" height="500px" width="300px" /></p>
+
+<h2 id="servic">建立Servic類別</h2>
+<p>先建立Interface，分別建立IProjectService和IStructureService，Interface的定義包含CRUD，另外依照各個Model的需要而建立其他的方法，程式如下：<br />
+IProjectService.cs</p>
+
+<figure class="highlight"><pre><code class="language-c#" data-lang="c#"><span class="k">namespace</span> <span class="nn">Service.Interface</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="k">interface</span> <span class="n">IProjectService</span>
+    <span class="p">{</span>
+        <span class="k">void</span> <span class="nf">Create</span><span class="p">(</span><span class="n">Project</span> <span class="n">entity</span><span class="p">);</span>
+
+        <span class="k">void</span> <span class="nf">Update</span><span class="p">(</span><span class="n">Project</span> <span class="n">entity</span><span class="p">);</span>
+
+        <span class="k">void</span> <span class="nf">Delete</span><span class="p">(</span><span class="n">Project</span> <span class="n">entity</span><span class="p">);</span>
+
+        <span class="kt">bool</span> <span class="nf">IsExists</span><span class="p">(</span><span class="n">Guid</span> <span class="n">id</span><span class="p">);</span>
+
+        <span class="n">Project</span> <span class="nf">GetById</span><span class="p">(</span><span class="n">Guid</span> <span class="n">id</span><span class="p">);</span>
+
+        <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">Project</span><span class="p">&gt;</span> <span class="nf">GetAll</span><span class="p">();</span> 
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>實作IProjectService，程式如下：<br />
+ProjectService.cs</p>
+
+<figure class="highlight"><pre><code class="language-c#" data-lang="c#"><span class="k">public</span> <span class="k">class</span> <span class="nc">ProjectService</span> <span class="p">:</span> <span class="n">IProjectService</span>
+<span class="p">{</span>
+    <span class="k">private</span> <span class="k">readonly</span> <span class="n">IRepository</span><span class="p">&lt;</span><span class="n">Project</span><span class="p">&gt;</span> <span class="n">repository</span> <span class="p">=</span> <span class="k">new</span> <span class="n">GenericRepository</span><span class="p">&lt;</span><span class="n">Project</span><span class="p">&gt;();</span>
+         
+    <span class="k">public</span> <span class="k">void</span> <span class="nf">Create</span><span class="p">(</span><span class="n">Project</span> <span class="n">entity</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">entity</span> <span class="p">==</span> <span class="k">null</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nf">ArgumentNullException</span><span class="p">(</span><span class="s">"entity"</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="k">else</span>
+        <span class="p">{</span>
+            <span class="n">repository</span><span class="p">.</span><span class="nf">Create</span><span class="p">(</span><span class="n">entity</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="k">void</span> <span class="nf">Update</span><span class="p">(</span><span class="n">Project</span> <span class="n">entity</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">entity</span> <span class="p">==</span> <span class="k">null</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nf">ArgumentNullException</span><span class="p">(</span><span class="s">"entity"</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="k">else</span>
+        <span class="p">{</span>
+            <span class="n">repository</span><span class="p">.</span><span class="nf">Update</span><span class="p">(</span><span class="n">entity</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="k">void</span> <span class="nf">Delete</span><span class="p">(</span><span class="n">Guid</span> <span class="n">id</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(!</span><span class="nf">IsExists</span><span class="p">(</span><span class="n">id</span><span class="p">))</span>
+        <span class="p">{</span>
+
+        <span class="p">}</span>
+        <span class="k">else</span>
+        <span class="p">{</span>
+            <span class="kt">var</span> <span class="n">entity</span> <span class="p">=</span> <span class="nf">GetById</span><span class="p">(</span><span class="n">id</span><span class="p">);</span>
+            <span class="n">repository</span><span class="p">.</span><span class="nf">Delete</span><span class="p">(</span><span class="n">entity</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="kt">bool</span> <span class="nf">IsExists</span><span class="p">(</span><span class="n">Guid</span> <span class="n">id</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="n">repository</span><span class="p">.</span><span class="nf">GetAll</span><span class="p">().</span><span class="nf">Any</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">Id</span> <span class="p">==</span> <span class="n">id</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="n">Project</span> <span class="nf">GetById</span><span class="p">(</span><span class="n">Guid</span> <span class="n">id</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="n">repository</span><span class="p">.</span><span class="nf">Get</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">Id</span> <span class="p">==</span> <span class="n">id</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">Project</span><span class="p">&gt;</span> <span class="nf">GetAll</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="n">repository</span><span class="p">.</span><span class="nf">GetAll</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<h2 id="web">調整Web專案</h2>
+<p>接著調整Web專案，因為建立Service專案，所以要在Web專案的參考，加入Service的參考，如下圖：<br />
+<img src="/image/ASP.NET_MVC(5)_Service/WerReference.png" alt="WerReference" class="img-responsive" height="500px" width="500px" /><br />
+<img src="/image/ASP.NET_MVC(5)_Service/WebReferenceService.png" alt="WebReferenceService" class="img-responsive" height="600px" width="150px" /></p>
+
+<h2 id="homecontroller">HomeController</h2>
+<p>修改HomeController，用Service取代Repository，程式如下：</p>
+
+<figure class="highlight"><pre><code class="language-c#" data-lang="c#"><span class="k">public</span> <span class="k">class</span> <span class="nc">HomeController</span> <span class="p">:</span> <span class="n">Controller</span>
+<span class="p">{</span>
+	<span class="k">private</span> <span class="k">readonly</span> <span class="n">IProjectService</span> <span class="n">projectService</span><span class="p">;</span>
+
+	<span class="k">public</span> <span class="nf">HomeController</span><span class="p">()</span>
+	<span class="p">{</span>
+		<span class="k">this</span><span class="p">.</span><span class="n">projectService</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">ProjectService</span><span class="p">();</span>
+	<span class="p">}</span>
+
+	<span class="k">public</span> <span class="n">ActionResult</span> <span class="nf">Index</span><span class="p">()</span>
+	<span class="p">{</span>
+		<span class="kt">var</span> <span class="n">projects</span> <span class="p">=</span> <span class="n">projectService</span><span class="p">.</span><span class="nf">GetAll</span><span class="p">();</span>
+		<span class="kt">var</span> <span class="n">viewModel</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">ProjectListViewModel</span><span class="p">();</span>
+		<span class="n">viewModel</span><span class="p">.</span><span class="n">ProjectList</span> <span class="p">=</span> <span class="n">projects</span><span class="p">;</span>
+
+		<span class="k">return</span> <span class="nf">View</span><span class="p">(</span><span class="n">viewModel</span><span class="p">);</span>
+	<span class="p">}</span>
+
+	<span class="k">public</span> <span class="n">ActionResult</span> <span class="nf">Create</span><span class="p">()</span>
+	<span class="p">{</span>
+		<span class="kt">var</span> <span class="n">viewModel</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">ProjectViewModel</span><span class="p">();</span>
+		<span class="k">return</span> <span class="nf">View</span><span class="p">(</span><span class="n">viewModel</span><span class="p">);</span>
+	<span class="p">}</span>
+
+	<span class="k">public</span> <span class="n">ActionResult</span> <span class="nf">Edit</span><span class="p">(</span><span class="n">Guid</span> <span class="n">id</span><span class="p">)</span>
+	<span class="p">{</span>
+		<span class="kt">var</span> <span class="n">viewModel</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">ProjectViewModel</span><span class="p">();</span>
+		<span class="kt">var</span> <span class="n">model</span> <span class="p">=</span> <span class="n">projectService</span><span class="p">.</span><span class="nf">GetById</span><span class="p">(</span><span class="n">id</span><span class="p">);</span>
+		<span class="n">viewModel</span><span class="p">.</span><span class="n">Id</span> <span class="p">=</span> <span class="n">id</span><span class="p">;</span>
+		<span class="n">viewModel</span><span class="p">.</span><span class="n">Name</span> <span class="p">=</span> <span class="n">model</span><span class="p">.</span><span class="n">Name</span><span class="p">;</span>
+
+		<span class="k">return</span> <span class="nf">View</span><span class="p">(</span><span class="s">"Create"</span><span class="p">,</span> <span class="n">viewModel</span><span class="p">);</span>
+	<span class="p">}</span>
+
+	<span class="p">[</span><span class="n">HttpPost</span><span class="p">]</span>
+	<span class="k">public</span> <span class="n">ActionResult</span> <span class="nf">Save</span><span class="p">(</span><span class="n">ProjectViewModel</span> <span class="n">viewModel</span><span class="p">)</span>
+	<span class="p">{</span>
+		<span class="k">if</span> <span class="p">(</span><span class="n">ModelState</span><span class="p">.</span><span class="n">IsValid</span><span class="p">)</span>
+		<span class="p">{</span>
+			<span class="k">if</span> <span class="p">(</span><span class="n">viewModel</span><span class="p">.</span><span class="n">Id</span> <span class="p">==</span> <span class="n">Guid</span><span class="p">.</span><span class="n">Empty</span><span class="p">)</span>
+			<span class="p">{</span>
+				<span class="kt">var</span> <span class="n">model</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">Project</span><span class="p">();</span>
+				<span class="n">model</span><span class="p">.</span><span class="n">Id</span> <span class="p">=</span> <span class="n">Guid</span><span class="p">.</span><span class="nf">NewGuid</span><span class="p">();</span>
+				<span class="n">model</span><span class="p">.</span><span class="n">Name</span> <span class="p">=</span> <span class="n">viewModel</span><span class="p">.</span><span class="n">Name</span><span class="p">;</span>
+				<span class="n">projectService</span><span class="p">.</span><span class="nf">Create</span><span class="p">(</span><span class="n">model</span><span class="p">);</span>
+			<span class="p">}</span>
+			<span class="k">else</span>
+			<span class="p">{</span>
+				<span class="kt">var</span> <span class="n">model</span> <span class="p">=</span> <span class="n">projectService</span><span class="p">.</span><span class="nf">GetById</span><span class="p">(</span><span class="n">viewModel</span><span class="p">.</span><span class="n">Id</span><span class="p">);</span>
+				<span class="n">model</span><span class="p">.</span><span class="n">Name</span> <span class="p">=</span> <span class="n">viewModel</span><span class="p">.</span><span class="n">Name</span><span class="p">;</span>
+				<span class="n">projectService</span><span class="p">.</span><span class="nf">Update</span><span class="p">(</span><span class="n">model</span><span class="p">);</span>
+			<span class="p">}</span>
+			<span class="k">return</span> <span class="nf">RedirectToAction</span><span class="p">(</span><span class="s">"Index"</span><span class="p">);</span>
+		<span class="p">}</span>
+		<span class="k">return</span> <span class="nf">View</span><span class="p">(</span><span class="s">"Create"</span><span class="p">,</span> <span class="n">viewModel</span><span class="p">);</span>
+	<span class="p">}</span>
+
+	<span class="k">public</span> <span class="n">ActionResult</span> <span class="nf">Delete</span><span class="p">(</span><span class="n">Guid</span> <span class="n">id</span><span class="p">)</span>
+	<span class="p">{</span>
+		<span class="n">projectService</span><span class="p">.</span><span class="nf">Delete</span><span class="p">(</span><span class="n">id</span><span class="p">);</span>
+
+		<span class="k">return</span> <span class="nf">RedirectToAction</span><span class="p">(</span><span class="s">"Index"</span><span class="p">);</span>
+	<span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>將程式編譯執行，看是不是可以正常運作。
+下一篇要加入IOC(Inversion of Control)/DI(Dependency Injection)或稱物件反轉/依賴注入，此功能是一個用來降低物件之間耦合性的設計原則。</p>
+
+<p><a href="https://github.com/royshow0316/MVC5" target="_blank">程式碼已放上Github</a></p>
+
+<p>參考資料：<br />
+<a href="http://kevintsengtw.blogspot.tw/2012/12/aspnet-mvc-part5-service.html" target="_blank">http://kevintsengtw.blogspot.tw/2012/12/aspnet-mvc-part5-service.html</a></p>
+
+
+  </div>
+
+</article>
+
+          </div>
+      </main>
+      <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <!--<h2 class="footer-heading">八蛋的程式派對</h2>-->
+    <p></p>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1" align="center">
+        <ul class="contact-list">
+          <!-- <li>八蛋的程式派對</li> -->
+          <li>聯絡我</li>
+          <li><a href="mailto:royshow0316@gmail.com">royshow0316@gmail.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-2" align="center">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/royshow0316"><span class="icon icon--github"><svg viewBox="0 0 16 16"><path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/></svg>
+</span><span class="username">royshow0316</span></a>
+
+          </li>
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3" align="center">
+        <!-- <p>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.
+</p> -->
+        <p>Powered by <a href="https://jekyllrb.com/" target="_blank">Jekyll</a>
+        ,  Hosted by <a href="https://github.com/" target="_blank">Github</a>
+        </p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+    </div>
+  </body>
+
+</html>

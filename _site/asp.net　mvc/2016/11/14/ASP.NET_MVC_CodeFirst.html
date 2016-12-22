@@ -140,47 +140,47 @@
 <p>Project.cs</p>
 
 <figure class="highlight"><pre><code class="language-c#" data-lang="c#"><span class="k">public</span> <span class="k">class</span> <span class="nc">Project</span>
-    <span class="p">{</span>
-        <span class="p">[</span><span class="n">Key</span><span class="p">]</span>
-        <span class="p">[</span><span class="n">Required</span><span class="p">]</span>
-        <span class="k">public</span> <span class="n">Guid</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+<span class="p">{</span>
+    <span class="p">[</span><span class="n">Key</span><span class="p">]</span>
+    <span class="p">[</span><span class="n">Required</span><span class="p">]</span>
+    <span class="k">public</span> <span class="n">Guid</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
 
-        <span class="k">public</span> <span class="kt">string</span> <span class="n">Name</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="kt">string</span> <span class="n">Name</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
         
-        <span class="k">public</span> <span class="k">virtual</span> <span class="n">ICollection</span><span class="p">&lt;</span><span class="n">Structure</span><span class="p">&gt;</span> <span class="n">Structure</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-    <span class="p">}</span></code></pre></figure>
+    <span class="k">public</span> <span class="k">virtual</span> <span class="n">ICollection</span><span class="p">&lt;</span><span class="n">Structure</span><span class="p">&gt;</span> <span class="n">Structure</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
 
 <p>Structure.cs</p>
 
 <figure class="highlight"><pre><code class="language-c#" data-lang="c#"><span class="k">public</span> <span class="k">class</span> <span class="nc">Structure</span>
-    <span class="p">{</span>
-        <span class="p">[</span><span class="n">Key</span><span class="p">]</span>
-        <span class="p">[</span><span class="n">Required</span><span class="p">]</span>
-        <span class="k">public</span> <span class="n">Guid</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+<span class="p">{</span>
+    <span class="p">[</span><span class="n">Key</span><span class="p">]</span>
+    <span class="p">[</span><span class="n">Required</span><span class="p">]</span>
+    <span class="k">public</span> <span class="n">Guid</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
 
-        <span class="k">public</span> <span class="kt">string</span> <span class="n">Name</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="kt">string</span> <span class="n">Name</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
 
-        <span class="k">public</span> <span class="k">virtual</span> <span class="n">ICollection</span><span class="p">&lt;</span><span class="n">Project</span><span class="p">&gt;</span> <span class="n">Project</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-    <span class="p">}</span></code></pre></figure>
+    <span class="k">public</span> <span class="k">virtual</span> <span class="n">ICollection</span><span class="p">&lt;</span><span class="n">Project</span><span class="p">&gt;</span> <span class="n">Project</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
 
 <p>[Key]表示是主鍵，[Required]表示是必填，Icollection是多對多關係的建置方式。</p>
 
 <p>再來要將新增的表加到IdentituModels.cs裡面，如下：</p>
 
 <figure class="highlight"><pre><code class="language-c#" data-lang="c#"><span class="k">public</span> <span class="k">class</span> <span class="nc">ApplicationDbContext</span> <span class="p">:</span> <span class="n">IdentityDbContext</span><span class="p">&lt;</span><span class="n">ApplicationUser</span><span class="p">&gt;</span>
-   <span class="p">{</span>
-    	<span class="k">public</span> <span class="n">DbSet</span><span class="p">&lt;</span><span class="n">Project</span><span class="p">&gt;</span> <span class="n">Project</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-    	<span class="k">public</span> <span class="n">DbSet</span><span class="p">&lt;</span><span class="n">Structure</span><span class="p">&gt;</span> <span class="n">Structure</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-    	<span class="k">public</span> <span class="nf">ApplicationDbContext</span><span class="p">()</span>
-            <span class="p">:</span> <span class="k">base</span><span class="p">(</span><span class="s">"DefaultConnection"</span><span class="p">,</span> <span class="n">throwIfV1Schema</span><span class="p">:</span> <span class="k">false</span><span class="p">)</span>
-       <span class="p">{</span>
-       <span class="p">}</span>
+<span class="p">{</span>
+	<span class="k">public</span> <span class="n">DbSet</span><span class="p">&lt;</span><span class="n">Project</span><span class="p">&gt;</span> <span class="n">Project</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+	<span class="k">public</span> <span class="n">DbSet</span><span class="p">&lt;</span><span class="n">Structure</span><span class="p">&gt;</span> <span class="n">Structure</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+	<span class="k">public</span> <span class="nf">ApplicationDbContext</span><span class="p">()</span>
+		<span class="p">:</span> <span class="k">base</span><span class="p">(</span><span class="s">"DefaultConnection"</span><span class="p">,</span> <span class="n">throwIfV1Schema</span><span class="p">:</span> <span class="k">false</span><span class="p">)</span>
+	<span class="p">{</span>
+	<span class="p">}</span>
 
-       <span class="k">public</span> <span class="k">static</span> <span class="n">ApplicationDbContext</span> <span class="nf">Create</span><span class="p">()</span>
-       <span class="p">{</span>
-           <span class="k">return</span> <span class="k">new</span> <span class="nf">ApplicationDbContext</span><span class="p">();</span>
-       <span class="p">}</span>
-   <span class="p">}</span></code></pre></figure>
+	<span class="k">public</span> <span class="k">static</span> <span class="n">ApplicationDbContext</span> <span class="nf">Create</span><span class="p">()</span>
+	<span class="p">{</span>
+		<span class="k">return</span> <span class="k">new</span> <span class="nf">ApplicationDbContext</span><span class="p">();</span>
+	<span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
 
 <h2 id="section-3">套件管理器主控台</h2>
 <p>接著我們要使用”套件管理器主控台”，以下指令的方式進行資料庫的操作，如下圖：<br />

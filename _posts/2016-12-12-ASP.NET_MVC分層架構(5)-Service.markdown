@@ -1,0 +1,49 @@
+---
+layout: post
+title:  "ASP.NET MVC分層架構(5)-加入Service層"
+date:   2016-12-12 13:49:31 +0800
+categories: Asp.Net　MVC
+---
+
+## 介紹
+在Repository層裡，主要是用來操作資料的存取，取得資料後的一些操作，要做判斷處理的就不適合放在Repository層，而Repository為提供給Service層使用，Controller主要為系統流程的控制，依據傳入的需求來決定要存取哪些資料，並且決定要選擇View以回應到需求端，資料的存取交給Repository做處理，而商業邏輯的處理不適合放在Controller，如果在Controller中放入商業邏輯再加上系統流程控制混在一起，Controller就會很肥大且複雜又難以維護。所以將商業邏輯放到Service層，Service層可以使用repository層所提供的服務來存取資料，Controller層則是透過Service層來做資料的處理，而不直接使用Repository。
+
+## 建立Service專案
+在方案中建立一個Service的類別專案，如下圖：  
+![CreateServiceProject](/image/ASP.NET_MVC(5)_Service/CreateServiceProject.png){:class="img-responsive" height="400px" width="200px"}  
+在Service層新增一個Interface資料夾，用來放置各個Service的Interface，而Service專案要加入SQLModel專案的參考，這樣才能知道要存取什麼資料，如下圖：  
+![ServiceReferenceInterface](/image/ASP.NET_MVC(5)_Service/ServiceReferenceInterface.png){:class="img-responsive" height="500px" width="300px"}  
+
+## 建立Servic類別
+先建立Interface，分別建立IProjectService和IStructureService，Interface的定義包含CRUD，另外依照各個Model的需要而建立其他的方法，程式如下：  
+IProjectService.cs  
+{% highlight C# %}
+namespace Service.Interface{    public interface IProjectService    {        void Create(Project entity);        void Update(Project entity);        void Delete(Project entity);        bool IsExists(Guid id);        Project GetById(Guid id);        IEnumerable<Project> GetAll();     }}
+{% endhighlight %}  
+實作IProjectService，程式如下：  
+ProjectService.cs  
+{% highlight C# %}
+public class ProjectService : IProjectService{    private readonly IRepository<Project> repository = new GenericRepository<Project>();             public void Create(Project entity)    {        if (entity == null)        {            throw new ArgumentNullException("entity");        }        else        {            repository.Create(entity);        }    }    public void Update(Project entity)    {        if (entity == null)        {            throw new ArgumentNullException("entity");        }        else        {            repository.Update(entity);        }    }    public void Delete(Guid id)    {        if (!IsExists(id))        {        }        else        {            var entity = GetById(id);            repository.Delete(entity);        }    }    public bool IsExists(Guid id)    {        return repository.GetAll().Any(x => x.Id == id);    }    public Project GetById(Guid id)    {        return repository.Get(x => x.Id == id);    }    public IEnumerable<Project> GetAll()    {        return repository.GetAll();    }}
+{% endhighlight %}
+
+## 調整Web專案
+接著調整Web專案，因為建立Service專案，所以要在Web專案的參考，加入Service的參考，如下圖：  
+![WerReference](/image/ASP.NET_MVC(5)_Service/WerReference.png){:class="img-responsive" height="500px" width="500px"}  
+![WebReferenceService](/image/ASP.NET_MVC(5)_Service/WebReferenceService.png){:class="img-responsive" height="600px" width="150px"}  
+
+## HomeController
+修改HomeController，用Service取代Repository，程式如下：  
+{% highlight C# %}
+public class HomeController : Controller{	private readonly IProjectService projectService;	public HomeController()	{		this.projectService = new ProjectService();	}	public ActionResult Index()	{		var projects = projectService.GetAll();		var viewModel = new ProjectListViewModel();		viewModel.ProjectList = projects;		return View(viewModel);	}	public ActionResult Create()	{		var viewModel = new ProjectViewModel();		return View(viewModel);	}	public ActionResult Edit(Guid id)	{		var viewModel = new ProjectViewModel();		var model = projectService.GetById(id);		viewModel.Id = id;		viewModel.Name = model.Name;		return View("Create", viewModel);	}	[HttpPost]	public ActionResult Save(ProjectViewModel viewModel)	{		if (ModelState.IsValid)		{			if (viewModel.Id == Guid.Empty)			{				var model = new Project();				model.Id = Guid.NewGuid();				model.Name = viewModel.Name;				projectService.Create(model);			}			else			{				var model = projectService.GetById(viewModel.Id);				model.Name = viewModel.Name;				projectService.Update(model);			}			return RedirectToAction("Index");		}		return View("Create", viewModel);	}	public ActionResult Delete(Guid id)	{		projectService.Delete(id);		return RedirectToAction("Index");	}}
+{% endhighlight %}
+將程式編譯執行，看是不是可以正常運作。
+下一篇要加入IOC(Inversion of Control)/DI(Dependency Injection)或稱物件反轉/依賴注入，此功能是一個用來降低物件之間耦合性的設計原則。
+
+[程式碼已放上Github](https://github.com/royshow0316/MVC5){:target='_blank'}
+
+參考資料：  
+[http://kevintsengtw.blogspot.tw/2012/12/aspnet-mvc-part5-service.html](http://kevintsengtw.blogspot.tw/2012/12/aspnet-mvc-part5-service.html){:target='_blank'}
+
+[jekyll-docs]: http://jekyllrb.com/docs/home
+[jekyll-gh]:   https://github.com/jekyll/jekyll
+[jekyll-talk]: https://talk.jekyllrb.com/

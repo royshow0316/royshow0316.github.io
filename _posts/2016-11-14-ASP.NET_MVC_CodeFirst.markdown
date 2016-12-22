@@ -27,23 +27,26 @@ categories: Asp.Net　MVC
 
 Project.cs
 {% highlight C# %}
-public class Project    {        [Key]        [Required]        public Guid Id { get; set; }        public string Name { get; set; }
+public class Project{    [Key]    [Required]    public Guid Id { get; set; }    public string Name { get; set; }
         
-        public virtual ICollection<Structure> Structure { get; set; }    }
+    public virtual ICollection<Structure> Structure { get; set; }}
 {% endhighlight %}
 Structure.cs
 {% highlight C# %}
-public class Structure    {        [Key]        [Required]        public Guid Id { get; set; }        public string Name { get; set; }        public virtual ICollection<Project> Project { get; set; }    }
+public class Structure{    [Key]    [Required]    public Guid Id { get; set; }    public string Name { get; set; }    public virtual ICollection<Project> Project { get; set; }}
 {% endhighlight %}
 [Key]表示是主鍵，[Required]表示是必填，Icollection是多對多關係的建置方式。
 
 再來要將新增的表加到IdentituModels.cs裡面，如下：
 {% highlight C# %}
-public class ApplicationDbContext : IdentityDbContext<ApplicationUser>   {
-    	public DbSet<Project> Project { get; set; }
-    	public DbSet<Structure> Structure { get; set; }
-    	public ApplicationDbContext()            : base("DefaultConnection", throwIfV1Schema: false)
-       {       }       public static ApplicationDbContext Create()       {           return new ApplicationDbContext();       }   }
+public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
+{
+	public DbSet<Project> Project { get; set; }
+	public DbSet<Structure> Structure { get; set; }
+	public ApplicationDbContext()
+		: base("DefaultConnection", throwIfV1Schema: false)
+	{	}	public static ApplicationDbContext Create()	{		return new ApplicationDbContext();	}
+}
 {% endhighlight %}
 
 ## 套件管理器主控台
