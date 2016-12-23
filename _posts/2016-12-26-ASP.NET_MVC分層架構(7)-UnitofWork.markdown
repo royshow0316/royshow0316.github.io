@@ -1,72 +1,64 @@
 ---
 layout: post
-title:  "使用okHttp讀取JSON資料"
-date:   2016-09-12 13:49:31 +0800
-categories: Android
+title:  "ASP.NET MVC分層架構(7)-Unit Of Work"
+date:   2016-12-26 13:49:31 +0800
+categories: Asp.Net　MVC
 ---
 
 ## 介紹
-什麼是JSON?，JSON的全名是JavaScript Object Notation，用途是資料交換。之前會使用XML來做資料交換，可是當資料量很多時，XML檔會變很肥大，而JSON是輕量級的資料交換格式。物件是以左大括號 { 開始，右大括號 } 結束。並以key:value的方式來儲存資料，多組的話則以逗號分開，看起來如下
-{% highlight JSON %}
-{
-  "Data": [
-    {
-      "Id": "0f4e3749-fdfa-42a3-9023-752e478297db",
-      "Name": "雷霆專案"
-    },
-    {
-      "Id": "be92c897-56fa-43b6-9d5b-12aebdc5bbce",
-      "Name": "蜂眼專案"
-    }
-  ]
+主要用來管理物件的CRUD操作，Unit of Work負責協調這些變化的持久化工作。Unit of Work的使用會結合Repository。接下來我們就開始來新增Unit of Work，在SQLModel新增UnitOfWork的資料夾，並新增UnitOfWork的介面和類別，如下圖：  
+![CreateUnitOfWork](/image/ASP.NET_MVC(7)_UnitOfWork/CreateUnitOfWork.png){:class="img-responsive" height="20px" width="800px"}
+
+## IUnitOfWork.cs
+Unit of Work的介面，程式如下：  
+{% highlight C# %}
+public interface IUnitOfWork : IDisposable{	DbContext Context { get; }	int SaveChange();}
+{% endhighlight %}
+
+## UnitOfWork.cs
+Unit of Work的實作，程式如下：  
+{% highlight C# %}
+public class UnitOfWork : IUnitOfWork{	private IDbContextFactory _dbContextFactory { get; set; }	private DbContext context;	private bool disposed = false;	public DbContext Context	{		get		{			if (this.context != null)			{				return this.context;			}			this.context = _dbContextFactory.GetDbContext();			return this.context;		}	}	public UnitOfWork(IDbContextFactory dbContextFactory)	{		this._dbContextFactory = dbContextFactory;	}	public int SaveChange()	{		int result = this.Context.SaveChanges();		return result;	}	protected virtual void Dispose(bool disposing)	{		if (!this.disposed)		{			if (disposing)			{				this.Context.Dispose();				this.context = null;			}		}		this.disposed = true;	}	public void Dispose()	{		Dispose(true);		GC.SuppressFinalize(this);	}}
+{% endhighlight %}
+
+## 修改GenericRpository
+主要修改的程式如下：  
+{% highlight C# %}
+public class GenericRepository<TEntity> : IRepository<TEntity>        where TEntity : class {
+	public IUnitOfWork _UnitOfWork { get; set; }
+	
+	private DbSet<TEntity> _dbSet { get; set; }
+	
+	public GenericRepository(IUnitOfWork unitOfWork)	{		this._UnitOfWork = unitOfWork;		this._context = unitOfWork.Context;		this._dbSet = unitOfWork.Context.Set<TEntity>();	}
 }
 {% endhighlight %}
 
-OkHttp是一個網路的應用程式框架，可快速實作資料交換的動作，讓Http連線的過程更有效率。使用OkHttp，可以簡化需先設計AsyncTask、輸出入迴圈或是許多執行緒等工作，讓開發的速度加快。[官方網址](http://square.github.io/okhttp/){:target='_blank'}
-
-## gradle設置
-加入OkHttp。
-{% highlight gradle %}
-compile 'com.squareup.okhttp3:okhttp:3.4.1'
+## 修改Service
+主要修改的程式如下：  
+{% highlight C# %}
+public class ProjectService : IProjectService{
+	private readonly IUnitOfWork _unitOfWork;
+	
+	private readonly IRepository<Project> _repository;	public ProjectService(IUnitOfWork unitOfWork, IRepository<Project> repository)	{		this._unitOfWork = unitOfWork;		this._repository = repository;	}
+	
+	public void Create(Project entity)	{		if (entity == null)		{			throw new ArgumentNullException("entity");		}		else		{			_repository.Create(entity);			_unitOfWork.SaveChange();		}	}	public void Update(Project entity)	{		if (entity == null)		{			throw new ArgumentNullException("entity");		}		else		{			_repository.Update(entity);			_unitOfWork.SaveChange();		}	}	public void Delete(Guid id)	{		if (!IsExists(id))		{		}		else		{			var entity = GetById(id);			_repository.Delete(entity);			_unitOfWork.SaveChange();		}	}
+}
 {% endhighlight %}
 
-## 權限設定
-在AndroidManifest.xml加入，允許應用程式訪問網路上的信息權限和允許應用程式打開網路，這兩個權限。
-{% highlight xml %}
-<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-<uses-permission android:name="android.permission.INTERNET" />
-{% endhighlight %}
-## OkHttp讀取JSON
-在最外面宣告OkHttpClient。
-
-{% highlight java %}
-private OkHttpClient client = new OkHttpClient();
+## UnityConfig註冊
+最後在UnitConfig加上註冊就好了，程式如下：  
+{% highlight C# %}
+public static void RegisterTypes(IUnityContainer container){
+	#region	container.RegisterType<IUnitOfWork, UnitOfWork>();	#endregion
+}
 {% endhighlight %}
 
-然後在OnCreate裡面實作，如下，執行後會發現，是以非同步的方式執行的，再之後要將資料放進NumberPicker，會是一個問題，這裡先不用管，之後會利用RxJava來解決。
-{% highlight java %}
-Request request = new Request.Builder().url("你的JSON Url").build();
-        Call call = client.newCall(request);
-        call.enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
+做到這裡會發現如果Service建的很多，每個Service都必須要重複寫CRUD，下一篇將把Service重複的地方抽出，並把Model會重複的部分也抽出。
 
-            }
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                String json = response.body().string();
-                Log.d("OkHttp", json);
-            }
-        });
-{% endhighlight %}
+參考資料：  
+http://kevintsengtw.blogspot.tw/2015/04/aspnet-mvc-twmvc18.html
 
-## 執行結果
-可以讀取到JSON的資料，如下圖
-![ParseJson](/image/Json/ParseJson.png){:class="img-responsive" height="20px" width="800px"}
-
-
-
-[程式碼已放上Github](https://github.com/royshow0316/JsonTest){:target='_blank'}
+[程式碼已放上Github](https://github.com/royshow0316/MVC7){:target='_blank'}
 
 [jekyll-docs]: http://jekyllrb.com/docs/home
 [jekyll-gh]:   https://github.com/jekyll/jekyll

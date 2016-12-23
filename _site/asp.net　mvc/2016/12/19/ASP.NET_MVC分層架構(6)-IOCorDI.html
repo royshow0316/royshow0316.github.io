@@ -124,8 +124,8 @@
 
 <h2 id="iocdi">導入IOC/DI</h2>
 <p>前面幾篇的程式碼還是直接依賴於實作的類別，但之前我們有建立介面，也就保持了點彈性，不同資料庫的資料存取，程式就會依照介面所設計的內容來實作，那麼系統日後假如要更換資料庫時就不需要重新改寫程式，不過這樣無法讓程式知道更換了不同的實作程式。這時候就可以導入IOC/DI Framework來解決這部分的問題。在Visual Studio的Nuget上可以找到並且已經整合好給ASP.NET MVC專案使用的組件，這次我們要用的是”Unity”版本是v4.0.1，如下圖：<br />
-<img src="/image/ASP.NET_MVC(6)_IOCorDI/Nuget.png" alt="Nuget" class="img-responsive" height="500px" width="500px" />
-在Web專案上選擇”管理Nuget套件”，並解輸入unity搜尋後下載第一個導入就好了，如下圖：<br />
+<img src="/image/ASP.NET_MVC(6)_IOCorDI/Nuget.png" alt="Nuget" class="img-responsive" height="500px" width="500px" /><br />
+在Web專案上選擇”管理Nuget套件”，並輸入unity搜尋後下載前兩個導入就好了，如下圖：<br />
 <img src="/image/ASP.NET_MVC(6)_IOCorDI/NugetInstall.png" alt="NugetInstall" class="img-responsive" height="300px" width="700px" /><br />
 安裝完成之後會在Web專案的App_Start目錄下新增UnityConfig.cs和UnityMvcActivator.cs兩個檔案，如下圖：<br />
 <img src="/image/ASP.NET_MVC(6)_IOCorDI/Unity.png" alt="Unity" class="img-responsive" height="300px" width="300px" /></p>
