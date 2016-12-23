@@ -7,7 +7,7 @@ categories: Asp.Net　MVC
 
 ## 介紹
 主要用來管理物件的CRUD操作，Unit of Work負責協調這些變化的持久化工作。Unit of Work的使用會結合Repository。接下來我們就開始來新增Unit of Work，在SQLModel新增UnitOfWork的資料夾，並新增UnitOfWork的介面和類別，如下圖：  
-![CreateUnitOfWork](/image/ASP.NET_MVC(7)_UnitOfWork/CreateUnitOfWork.png){:class="img-responsive" height="20px" width="800px"}
+![CreateUnitOfWork](/image/ASP.NET_MVC(7)_UnitOfWork/CreateUnitOfWork.png){:class="img-responsive" height="300px" width="600px"}
 
 ## IUnitOfWork.cs
 Unit of Work的介面，程式如下：  
