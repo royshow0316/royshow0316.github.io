@@ -124,7 +124,7 @@
 
 <h2 id="iocdi">導入IOC/DI</h2>
 <p>前面幾篇的程式碼還是直接依賴於實作的類別，但之前我們有建立介面，也就保持了點彈性，不同資料庫的資料存取，程式就會依照介面所設計的內容來實作，那麼系統日後假如要更換資料庫時就不需要重新改寫程式，不過這樣無法讓程式知道更換了不同的實作程式。這時候就可以導入IOC/DI Framework來解決這部分的問題。在Visual Studio的Nuget上可以找到並且已經整合好給ASP.NET MVC專案使用的組件，這次我們要用的是”Unity”版本是v4.0.1，如下圖：<br />
-<img src="/image/ASP.NET_MVC(6)_IOCorDI/Nuget.png" alt="Nuget" class="img-responsive" height="500px" width="500px" /><br />
+<img src="/image/ASP.NET_MVC(6)_IOCorDI/Nuget.png" alt="Nuget" class="img-responsive" height="400px" width="500px" /><br />
 在Web專案上選擇”管理Nuget套件”，並輸入unity搜尋後下載前兩個導入就好了，如下圖：<br />
 <img src="/image/ASP.NET_MVC(6)_IOCorDI/NugetInstall.png" alt="NugetInstall" class="img-responsive" height="300px" width="700px" /><br />
 安裝完成之後會在Web專案的App_Start目錄下新增UnityConfig.cs和UnityMvcActivator.cs兩個檔案，如下圖：<br />
@@ -239,8 +239,8 @@
 <p>在GenericRepository.cs裡有兩個建構式是有傳入參數的，雖然說兩個傳入參數的型別不同，但是對於Unity來說，這兩個沒辦法去分別，因為建構式的傳入參數個數都一樣，在 Unity去做型別註冊時就根本不知道該用哪一個建構式，所以先刪除以ObjectContext為輸入參數的建構式。</p>
 
 <h2 id="db">建立Db工廠</h2>
-<p>到這裡會發現在SQL Server Management Studio(SSMS)修改完資料之後回到網頁，發現網頁並沒有顯示修改的資料，其實問題在於RegisterTypes這個方法是static的，因為在靜態方法裡所建立的DbContext實例都將會維持同一個，直到該Application結束，程式執行中的DbContext並不會去讀取資料庫的資料，而是讀取在記憶體裡DbContext的資料。我們可以另外建立一個類別與方法來做DbContext實例，然後再RegisterType裡註冊，先來建立工廠介面，程式如下：<br />
-IDbContextFactory</p>
+<p>到這裡會發現在SQL Server Management Studio(SSMS)修改完資料之後回到網頁，發現網頁並沒有顯示修改的資料，其實問題在於RegisterTypes這個方法是static的，因為在靜態方法裡所建立的DbContext實例都將會維持同一個，直到該Application結束，程式執行中的DbContext並不會去讀取資料庫的資料，而是讀取在記憶體裡DbContext的資料。我們可以另外建立一個類別與方法來做DbContext實例，然後再RegisterType裡註冊，先來建立工廠介面，程式如下：</p>
+<font color="red">IDbContextFactory.cs</font>
 
 <figure class="highlight"><pre><code class="language-c#" data-lang="c#"><span class="k">public</span> <span class="k">interface</span> <span class="n">IDbContextFactory</span>
 <span class="p">{</span>
@@ -248,6 +248,7 @@ IDbContextFactory</p>
 <span class="p">}</span></code></pre></figure>
 
 <p>再來實作介面，建立工廠實作：</p>
+<font color="red">DbContextFactory.cs</font>
 
 <figure class="highlight"><pre><code class="language-c#" data-lang="c#"><span class="k">public</span> <span class="k">class</span> <span class="nc">DbContextFactory</span> <span class="p">:</span> <span class="n">IDbContextFactory</span>
 <span class="p">{</span>

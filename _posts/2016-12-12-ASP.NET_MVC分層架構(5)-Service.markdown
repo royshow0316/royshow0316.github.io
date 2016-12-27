@@ -15,13 +15,13 @@ categories: Asp.Net　MVC
 ![ServiceReferenceInterface](/image/ASP.NET_MVC(5)_Service/ServiceReferenceInterface.png){:class="img-responsive" height="500px" width="300px"}  
 
 ## 建立Servic類別
-先建立Interface，分別建立IProjectService和IStructureService，Interface的定義包含CRUD，另外依照各個Model的需要而建立其他的方法，程式如下：  
-IProjectService.cs  
+先建立Interface，分別建立IProjectService和IStructureService，Interface的定義包含CRUD，另外依照各個Model的需要而建立其他的方法，程式如下：
+<font color="red">IProjectService.cs</font>    
 {% highlight C# %}
 namespace Service.Interface{    public interface IProjectService    {        void Create(Project entity);        void Update(Project entity);        void Delete(Project entity);        bool IsExists(Guid id);        Project GetById(Guid id);        IEnumerable<Project> GetAll();     }}
 {% endhighlight %}  
 實作IProjectService，程式如下：  
-ProjectService.cs  
+<font color="red">ProjectService.cs</font>   
 {% highlight C# %}
 public class ProjectService : IProjectService{    private readonly IRepository<Project> repository = new GenericRepository<Project>();             public void Create(Project entity)    {        if (entity == null)        {            throw new ArgumentNullException("entity");        }        else        {            repository.Create(entity);        }    }    public void Update(Project entity)    {        if (entity == null)        {            throw new ArgumentNullException("entity");        }        else        {            repository.Update(entity);        }    }    public void Delete(Guid id)    {        if (!IsExists(id))        {        }        else        {            var entity = GetById(id);            repository.Delete(entity);        }    }    public bool IsExists(Guid id)    {        return repository.GetAll().Any(x => x.Id == id);    }    public Project GetById(Guid id)    {        return repository.Get(x => x.Id == id);    }    public IEnumerable<Project> GetAll()    {        return repository.GetAll();    }}
 {% endhighlight %}

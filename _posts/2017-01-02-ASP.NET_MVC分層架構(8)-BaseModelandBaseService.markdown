@@ -1,0 +1,75 @@
+---
+layout: post
+title:  "ASP.NET MVC分層架構(8)-BaseModel and BaseService"
+date:   2017-01-02 13:49:31 +0800
+categories: Asp.Net　MVC
+---
+
+## 介紹
+分層架構到這裡後，會發現有些地方明明是一樣的功能，卻還要重複編寫，像是CRUD這種功能，在這要說明如何將CRUD的部分抽離出來，使程式簡單化，不用寫重複的功能。
+
+## BaseModel
+在SQLModel專案的Models資料夾下，新增BaseModel類別，裡面的內容是通常每個表都會使用的欄位，程式如下：  
+{% highlight C# %}
+public abstract class BaseModel{	public DateTime CreateDate { get; set; }	public DateTime ModifyDate { get; set; }	public string CreatorId { get; set; }	[ForeignKey("CreatorId")]	public virtual ApplicationUser Creator { get; set; }
+	
+	public string ModifyId { get; set; }	[ForeignKey("ModifyId")]	public virtual ApplicationUser Modify { get; set; }}
+{% endhighlight %}  
+
+## 繼承BaseModel
+在Project Model裡加入繼承BaseModel，在每次有新增Project的時候也會連BaseModel的內容一起新增，程式如下：  
+{% highlight C# %}
+public class Project : BaseModel
+{	[Key]	[Required]	public Guid Id { get; set; }	public string Name { get; set; }	public virtual ICollection<Structure> Structure { get; set; }}
+{% endhighlight %}
+Structure一樣也繼承BaseModel，記得要在下指令Add-Migration，再下Update-Database就新增好BaseModel了。
+
+## 修改Repository
+修改SQLModel專案的IRepository和GenericRepository，程式如下：  
+<font color="red">IRepository.cs</font>  
+{% highlight C# %}
+public interface IRepository<TEntity>{	IUnitOfWork UnitOfWork { get; set; }	Guid Create(TEntity entity);	void Update(TEntity entity);	Guid Delete(TEntity entity);	IQueryable<TEntity> FindBy(Expression<Func<TEntity, bool>> predicate);	IQueryable<TEntity> GetAll();	TEntity GetById(Guid id);}
+{% endhighlight %}  
+<font color="red">GenericRepository.cs</font>  
+{% highlight C# %}
+public class GenericRepository<TEntity> : IRepository<TEntity>        where TEntity : BaseModel {	public IDbSet<TEntity> DbSet { get; set; }	public DbContext DbContext { get; set; }	public IUnitOfWork UnitOfWork { get; set; }	public GenericRepository(IUnitOfWork unitOfWork)	{		this.UnitOfWork = unitOfWork;		this.DbContext = unitOfWork.Context;		this.DbSet = DbContext.Set<TEntity>();
+	}	public virtual Guid Create(TEntity entity)
+	{
+		dynamic obj = DbSet.Add(entity);
+		return obj.Id;
+	}	public void Update(TEntity entity)	{		DbSet.Attach(entity);		DbContext.Entry(entity).State = EntityState.Modified;		DbContext.Entry(entity).Property(x => x.CreateDate).IsModified = false;		DbContext.Entry(entity).Property(x => x.CreatorId).IsModified = false;	}	public virtual Guid Delete(TEntity entity)	{		if (DbContext.Entry(entity).State == EntityState.Detached)		{			DbSet.Attach(entity);		}		dynamic obj = DbSet.Remove(entity);		return obj.Id;	}	public virtual IQueryable<TEntity> FindBy(Expression<Func<TEntity, bool>> predicate)	{		return DbSet.Where(predicate);	}	public virtual IQueryable<TEntity> GetAll()	{		return DbSet;	}	public virtual TEntity GetById(Guid id)	{		return DbSet.Find(id);	}}
+{% endhighlight %}  
+
+## BaseService
+在Service專案下，新增BaseService，在Nuget下載Microsoft.AspNet.WebApi.Client和Microsoft.AspNet.Identity.Core，Service會使用到這些參考，我們將BaseService利用泛型寫成可以傳入任何的Model，另外在這裡有用到IsNotEmptyOrNull是自己寫的一個StringHelper類別裡的方法，程式如下：  
+<font color="red">IBaseService.cs</font>  
+{% highlight C# %}
+public interface IBaseService<TEntity>{	Guid Create(TEntity entity);	bool Update(TEntity entity);	bool UpdateOnly(TEntity entity);	bool Delete(Guid id);	IQueryable<TEntity> FindBy(Expression<Func<TEntity, bool>> predicate);	IQueryable<TEntity> GetAll();        TEntity GetById(Guid id);}
+{% endhighlight %}  
+<font color="red">BaseService.cs</font>  
+{% highlight C# %}
+public abstract class BaseService<TEntity> : IBaseService<TEntity> where TEntity : BaseModel{
+	private readonly IUnitOfWork _unitOfWork;	protected IRepository<TEntity> _repository { get; set; }	public BaseService(IUnitOfWork unitOfWork, IRepository<TEntity> repository)	{		this._unitOfWork = unitOfWork;		this._repository = repository;	}	public virtual Guid Create(TEntity entity)	{		string userId = HttpContext.Current.User.Identity.GetUserId();		entity.CreatorId = entity.CreatorId.IsNotEmptyOrNull() ? entity.CreatorId : userId;		entity.CreateDate = DateTime.Now;		entity.ModifyId = userId;		entity.ModifyDate = DateTime.Now;		var result =  _repository.Create(entity);		_repository.UnitOfWork.SaveChange();		return result;	}	public virtual bool Update(TEntity entity)	{		bool result = false;		if (null != entity)		{			entity.ModifyId = HttpContext.Current.User.Identity.GetUserId();			entity.ModifyDate = DateTime.Now;			_repository.Update(entity);			_unitOfWork.SaveChange();			result = true;		}		return result;	}	public virtual bool UpdateOnly(TEntity entity)	{		bool result = false;		if (null != entity)		{			_repository.Update(entity);			_unitOfWork.SaveChange();			result = true;		}		return result;	}	public virtual bool Delete(Guid id)	{		var entity = _repository.GetById(id);		var result = _repository.Delete(entity);		_repository.UnitOfWork.SaveChange();		return result == id;	}	public virtual IQueryable<TEntity> GetAll()	{		var result = _repository.GetAll();		return result;	}	public virtual TEntity GetById(Guid id)	{		var result = _repository.GetById(id);		return result;	}	public virtual IQueryable<TEntity> FindBy(Expression<Func<TEntity, bool>> predicate)	{		return _repository.FindBy(predicate);	}}
+{% endhighlight %}  
+<font color="red">StringHelper.cs</font>  
+{% highlight C# %}
+public static class StringHelper{	public static bool IsEmptyOrNull(this string input)	{		if (input == null || input.Equals(""))		{			return true;		}		else		{			return false;		}	}	public static bool IsNotEmptyOrNull(this string input)	{		if (input == null || input.Equals(""))		{			return false;		}		else		{			return true;		}	}}
+{% endhighlight %}
+
+## 修改ProjectService
+接著要修改IProjectService和ProjectService，要繼承BaseService並在泛型裡加上使用的Model，繼承以後就不需要在每個Service寫CRUD這些重複的功能，程式如下：  
+<font color="red">IProjectService.cs</font>  
+{% highlight C# %}
+public interface IProjectService : IBaseService<Project>{        }
+{% endhighlight %}  
+<font color="red">ProjectService.cs</font>  
+{% highlight C# %}
+public class ProjectService : BaseService<Project>, IProjectService{	public ProjectService(IUnitOfWork unitOfWork, IRepository<Project> repository)		: base(unitOfWork, repository)	{ }}
+{% endhighlight %}  
+StructureService就跟ProjectService差不多，去做修改就好了。都修改好之後，就可以執行了。到這裡會發現不用在每次新增新的Model後，在新的Service上還要寫CRUD這些功能了，只需要繼承BaseService就可以有這些功能，是不是方便很多！
+
+[程式碼已放上Github](https://github.com/royshow0316/MVC8){:target='_blank'}
+
+[jekyll-docs]: http://jekyllrb.com/docs/home
+[jekyll-gh]:   https://github.com/jekyll/jekyll
+[jekyll-talk]: https://talk.jekyllrb.com/

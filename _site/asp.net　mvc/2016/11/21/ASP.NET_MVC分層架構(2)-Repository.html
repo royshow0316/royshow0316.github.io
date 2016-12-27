@@ -256,8 +256,8 @@ else
 
 <h2 id="repository">建立Repository</h2>
 <p>先建立Repository類別的介面，建立介面是為了避免依賴Repository類別，之後在Controller只要用介面來進行資料操作，不需要直接使用Repository類別。
-在專案中的Model目錄下建立Interface目錄，並新增一個IStructrueRepository。
-IStructrueRepository.cs</p>
+在專案中的Model目錄下建立Interface目錄，並新增一個IStructrueRepository。</p>
+<font color="red">IStructureRepository.cs</font>
 
 <figure class="highlight"><pre><code class="language-c#" data-lang="c#"><span class="k">namespace</span> <span class="nn">MVC.Models.Interface</span>
 <span class="p">{</span>
@@ -277,8 +277,8 @@ IStructrueRepository.cs</p>
     <span class="p">}</span>
 <span class="p">}</span></code></pre></figure>
 
-<p>建立Repository類別，並實作剛剛建立的Interface，最後還要實作IDisposable介面，讓資料操作後可以釋放資源。
-StructrueRepository.cs</p>
+<p>建立Repository類別，並實作剛剛建立的Interface，最後還要實作IDisposable介面，讓資料操作後可以釋放資源。</p>
+<font color="red">StructureRepository.cs</font>
 
 <figure class="highlight"><pre><code class="language-c#" data-lang="c#"><span class="k">namespace</span> <span class="nn">MVC.Models.Repository</span>
 <span class="p">{</span>

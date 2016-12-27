@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>
+    八蛋的程式派對 | ASP.NET MVC分層架構(7)-Unit of Work
+  </title>
+  <meta name="description" content="介紹 主要用來管理物件的CRUD操作，Unit of Work負責協調這些變化的持久化工作。Unit of Work的使用會結合Repository。接下來我們就開始來新增Unit of Work，在SQLModel新增UnitOfWork的資料夾，並新增UnitOfWork的介面和類別，如下圖：">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://royshow.github.io//asp.net%E3%80%80mvc/2016/12/26/ASP.NET_MVC%E5%88%86%E5%B1%A4%E6%9E%B6%E6%A7%8B(7)-UnitOfWork.html">
+  <link rel="alternate" type="application/rss+xml" title="八蛋的程式派對" href="http://royshow.github.io//feed.xml">
+
+  <style>
+    @media screen and (min-width:600px) {
+      body {
+        width: 90%;
+        margin-left: 5%;
+      }
+    }
+    @media screen and (min-width:900px) {
+      body {
+        width: 80%;
+        margin-left: 10%;
+      }
+    }
+    @media screen and (min-width:1200px) {
+      body {
+        width: 70%;
+        margin-left: 15%;
+      }
+    }
+    @media screen and (min-width:1500px) {
+      body {
+        width: 60%;
+        margin-left: 20%;
+      }
+    }
+  </style>
+</head>
+  <div style="position:absolute;left:0"; style="background-color: #34352D">
+    
+  </div>
+  <body style="background-image: url('/image/background.png'); background-repeat: repeat">
+    <div align="center" style="background-color: #34352D; overflow: hidden">
+      <script type="text/javascript" src="//js1.bloggerads.net/ShowBanner.aspx?blogid=20161103000005"></script>
+    </div>
+    <div style="background-color: #eeeeee;">
+      <header class="site-header" role="banner">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">
+      <img src="/image/egg.png" height="24px" style="vertical-align: baseline" />
+      八蛋的程式派對
+    </a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+        
+          
+          <a class="page-link" href="/">文章列表</a>
+          
+        
+          
+        
+          
+          <a class="page-link" href="/about/">關於</a>
+          
+        
+          
+          <a class="page-link" href="/categories/">類別</a>
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+      <main class="page-content" aria-label="Content">
+          <div class="wrapper">
+            <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">ASP.NET MVC分層架構(7)-Unit of Work</h1>
+    <p class="post-meta">
+      <time datetime="2016-12-26T13:49:31+08:00" itemprop="datePublished">
+        Dec 26, 2016
+      </time>
+      &nbsp;
+      <span class="categories">類別:
+        
+        <a href="/categories/#Asp.Net　MVC" title="Asp.Net　MVC">Asp.Net　MVC</a>&nbsp;
+        </span>
+      
+      &nbsp;
+      <span class="tags">標籤:
+        </span>
+      
+    </p>
+  </header>
+
+  <div class="post-content" itemprop="articleBody">
+    <h2 id="section">介紹</h2>
+<p>主要用來管理物件的CRUD操作，Unit of Work負責協調這些變化的持久化工作。Unit of Work的使用會結合Repository。接下來我們就開始來新增Unit of Work，在SQLModel新增UnitOfWork的資料夾，並新增UnitOfWork的介面和類別，如下圖：<br />
+<img src="/image/ASP.NET_MVC(7)_UnitOfWork/CreateUnitOfWork.png" alt="CreateUnitOfWork" class="img-responsive" height="600px" width="300px" /></p>
+
+<h2 id="iunitofworkcs">IUnitOfWork.cs</h2>
+<p>Unit of Work的介面，程式如下：</p>
+
+<figure class="highlight"><pre><code class="language-c#" data-lang="c#"><span class="k">public</span> <span class="k">interface</span> <span class="n">IUnitOfWork</span> <span class="p">:</span> <span class="n">IDisposable</span>
+<span class="p">{</span>
+	<span class="n">DbContext</span> <span class="n">Context</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
+
+	<span class="kt">int</span> <span class="nf">SaveChange</span><span class="p">();</span>
+<span class="p">}</span></code></pre></figure>
+
+<h2 id="unitofworkcs">UnitOfWork.cs</h2>
+<p>Unit of Work的實作，程式如下：</p>
+
+<figure class="highlight"><pre><code class="language-c#" data-lang="c#"><span class="k">public</span> <span class="k">class</span> <span class="nc">UnitOfWork</span> <span class="p">:</span> <span class="n">IUnitOfWork</span>
+<span class="p">{</span>
+	<span class="k">private</span> <span class="n">IDbContextFactory</span> <span class="n">_dbContextFactory</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+
+	<span class="k">private</span> <span class="n">DbContext</span> <span class="n">context</span><span class="p">;</span>
+
+	<span class="k">private</span> <span class="kt">bool</span> <span class="n">disposed</span> <span class="p">=</span> <span class="k">false</span><span class="p">;</span>
+
+	<span class="k">public</span> <span class="n">DbContext</span> <span class="n">Context</span>
+	<span class="p">{</span>
+		<span class="k">get</span>
+		<span class="p">{</span>
+			<span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">context</span> <span class="p">!=</span> <span class="k">null</span><span class="p">)</span>
+			<span class="p">{</span>
+				<span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="n">context</span><span class="p">;</span>
+			<span class="p">}</span>
+
+			<span class="k">this</span><span class="p">.</span><span class="n">context</span> <span class="p">=</span> <span class="n">_dbContextFactory</span><span class="p">.</span><span class="nf">GetDbContext</span><span class="p">();</span>
+			<span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="n">context</span><span class="p">;</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+
+	<span class="k">public</span> <span class="nf">UnitOfWork</span><span class="p">(</span><span class="n">IDbContextFactory</span> <span class="n">dbContextFactory</span><span class="p">)</span>
+	<span class="p">{</span>
+		<span class="k">this</span><span class="p">.</span><span class="n">_dbContextFactory</span> <span class="p">=</span> <span class="n">dbContextFactory</span><span class="p">;</span>
+	<span class="p">}</span>
+
+	<span class="k">public</span> <span class="kt">int</span> <span class="nf">SaveChange</span><span class="p">()</span>
+	<span class="p">{</span>
+		<span class="kt">int</span> <span class="n">result</span> <span class="p">=</span> <span class="k">this</span><span class="p">.</span><span class="n">Context</span><span class="p">.</span><span class="nf">SaveChanges</span><span class="p">();</span>
+		<span class="k">return</span> <span class="n">result</span><span class="p">;</span>
+	<span class="p">}</span>
+
+	<span class="k">protected</span> <span class="k">virtual</span> <span class="k">void</span> <span class="nf">Dispose</span><span class="p">(</span><span class="kt">bool</span> <span class="n">disposing</span><span class="p">)</span>
+	<span class="p">{</span>
+		<span class="k">if</span> <span class="p">(!</span><span class="k">this</span><span class="p">.</span><span class="n">disposed</span><span class="p">)</span>
+		<span class="p">{</span>
+			<span class="k">if</span> <span class="p">(</span><span class="n">disposing</span><span class="p">)</span>
+			<span class="p">{</span>
+				<span class="k">this</span><span class="p">.</span><span class="n">Context</span><span class="p">.</span><span class="nf">Dispose</span><span class="p">();</span>
+				<span class="k">this</span><span class="p">.</span><span class="n">context</span> <span class="p">=</span> <span class="k">null</span><span class="p">;</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+		<span class="k">this</span><span class="p">.</span><span class="n">disposed</span> <span class="p">=</span> <span class="k">true</span><span class="p">;</span>
+	<span class="p">}</span>
+
+	<span class="k">public</span> <span class="k">void</span> <span class="nf">Dispose</span><span class="p">()</span>
+	<span class="p">{</span>
+		<span class="nf">Dispose</span><span class="p">(</span><span class="k">true</span><span class="p">);</span>
+		<span class="n">GC</span><span class="p">.</span><span class="nf">SuppressFinalize</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+	<span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<h2 id="genericrpository">修改GenericRpository</h2>
+<p>主要修改的程式如下：</p>
+
+<figure class="highlight"><pre><code class="language-c#" data-lang="c#"><span class="k">public</span> <span class="k">class</span> <span class="nc">GenericRepository</span><span class="p">&lt;</span><span class="n">TEntity</span><span class="p">&gt;</span> <span class="p">:</span> <span class="n">IRepository</span><span class="p">&lt;</span><span class="n">TEntity</span><span class="p">&gt;</span>
+        <span class="k">where</span> <span class="n">TEntity</span> <span class="p">:</span> <span class="k">class</span> 
+<span class="err">{</span>
+	<span class="nc">public</span> <span class="n">IUnitOfWork</span> <span class="n">_UnitOfWork</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+	
+	<span class="k">private</span> <span class="n">DbSet</span><span class="p">&lt;</span><span class="n">TEntity</span><span class="p">&gt;</span> <span class="n">_dbSet</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+	
+	<span class="k">public</span> <span class="nf">GenericRepository</span><span class="p">(</span><span class="n">IUnitOfWork</span> <span class="n">unitOfWork</span><span class="p">)</span>
+	<span class="p">{</span>
+		<span class="k">this</span><span class="p">.</span><span class="n">_UnitOfWork</span> <span class="p">=</span> <span class="n">unitOfWork</span><span class="p">;</span>
+		<span class="k">this</span><span class="p">.</span><span class="n">_context</span> <span class="p">=</span> <span class="n">unitOfWork</span><span class="p">.</span><span class="n">Context</span><span class="p">;</span>
+		<span class="k">this</span><span class="p">.</span><span class="n">_dbSet</span> <span class="p">=</span> <span class="n">unitOfWork</span><span class="p">.</span><span class="n">Context</span><span class="p">.</span><span class="n">Set</span><span class="p">&lt;</span><span class="n">TEntity</span><span class="p">&gt;();</span>
+	<span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<h2 id="service">修改Service</h2>
+<p>主要修改的程式如下：</p>
+
+<figure class="highlight"><pre><code class="language-c#" data-lang="c#"><span class="k">public</span> <span class="k">class</span> <span class="nc">ProjectService</span> <span class="p">:</span> <span class="n">IProjectService</span>
+<span class="p">{</span>
+	<span class="k">private</span> <span class="k">readonly</span> <span class="n">IUnitOfWork</span> <span class="n">_unitOfWork</span><span class="p">;</span>
+	
+	<span class="k">private</span> <span class="k">readonly</span> <span class="n">IRepository</span><span class="p">&lt;</span><span class="n">Project</span><span class="p">&gt;</span> <span class="n">_repository</span><span class="p">;</span>
+
+	<span class="k">public</span> <span class="nf">ProjectService</span><span class="p">(</span><span class="n">IUnitOfWork</span> <span class="n">unitOfWork</span><span class="p">,</span> <span class="n">IRepository</span><span class="p">&lt;</span><span class="n">Project</span><span class="p">&gt;</span> <span class="n">repository</span><span class="p">)</span>
+	<span class="p">{</span>
+		<span class="k">this</span><span class="p">.</span><span class="n">_unitOfWork</span> <span class="p">=</span> <span class="n">unitOfWork</span><span class="p">;</span>
+		<span class="k">this</span><span class="p">.</span><span class="n">_repository</span> <span class="p">=</span> <span class="n">repository</span><span class="p">;</span>
+	<span class="p">}</span>
+	
+	<span class="k">public</span> <span class="k">void</span> <span class="nf">Create</span><span class="p">(</span><span class="n">Project</span> <span class="n">entity</span><span class="p">)</span>
+	<span class="p">{</span>
+		<span class="k">if</span> <span class="p">(</span><span class="n">entity</span> <span class="p">==</span> <span class="k">null</span><span class="p">)</span>
+		<span class="p">{</span>
+			<span class="k">throw</span> <span class="k">new</span> <span class="nf">ArgumentNullException</span><span class="p">(</span><span class="s">"entity"</span><span class="p">);</span>
+		<span class="p">}</span>
+		<span class="k">else</span>
+		<span class="p">{</span>
+			<span class="n">_repository</span><span class="p">.</span><span class="nf">Create</span><span class="p">(</span><span class="n">entity</span><span class="p">);</span>
+			<span class="n">_unitOfWork</span><span class="p">.</span><span class="nf">SaveChange</span><span class="p">();</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+
+	<span class="k">public</span> <span class="k">void</span> <span class="nf">Update</span><span class="p">(</span><span class="n">Project</span> <span class="n">entity</span><span class="p">)</span>
+	<span class="p">{</span>
+		<span class="k">if</span> <span class="p">(</span><span class="n">entity</span> <span class="p">==</span> <span class="k">null</span><span class="p">)</span>
+		<span class="p">{</span>
+			<span class="k">throw</span> <span class="k">new</span> <span class="nf">ArgumentNullException</span><span class="p">(</span><span class="s">"entity"</span><span class="p">);</span>
+		<span class="p">}</span>
+		<span class="k">else</span>
+		<span class="p">{</span>
+			<span class="n">_repository</span><span class="p">.</span><span class="nf">Update</span><span class="p">(</span><span class="n">entity</span><span class="p">);</span>
+			<span class="n">_unitOfWork</span><span class="p">.</span><span class="nf">SaveChange</span><span class="p">();</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+
+	<span class="k">public</span> <span class="k">void</span> <span class="nf">Delete</span><span class="p">(</span><span class="n">Guid</span> <span class="n">id</span><span class="p">)</span>
+	<span class="p">{</span>
+		<span class="k">if</span> <span class="p">(!</span><span class="nf">IsExists</span><span class="p">(</span><span class="n">id</span><span class="p">))</span>
+		<span class="p">{</span>
+
+		<span class="p">}</span>
+		<span class="k">else</span>
+		<span class="p">{</span>
+			<span class="kt">var</span> <span class="n">entity</span> <span class="p">=</span> <span class="nf">GetById</span><span class="p">(</span><span class="n">id</span><span class="p">);</span>
+			<span class="n">_repository</span><span class="p">.</span><span class="nf">Delete</span><span class="p">(</span><span class="n">entity</span><span class="p">);</span>
+			<span class="n">_unitOfWork</span><span class="p">.</span><span class="nf">SaveChange</span><span class="p">();</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<h2 id="unityconfig">UnityConfig註冊</h2>
+<p>最後在UnitConfig加上註冊就好了，程式如下：</p>
+
+<figure class="highlight"><pre><code class="language-c#" data-lang="c#"><span class="k">public</span> <span class="k">static</span> <span class="k">void</span> <span class="nf">RegisterTypes</span><span class="p">(</span><span class="n">IUnityContainer</span> <span class="n">container</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="err">#</span><span class="n">region</span> <span class="n">UnitOfWork</span>
+	<span class="n">container</span><span class="p">.</span><span class="n">RegisterType</span><span class="p">&lt;</span><span class="n">IUnitOfWork</span><span class="p">,</span> <span class="n">UnitOfWork</span><span class="p">&gt;();</span>
+	<span class="err">#</span><span class="n">endregion</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>做到這裡會發現如果Service建的很多，每個Service都必須要重複寫CRUD，下一篇將把Service重複的地方抽出，並把Model會重複的部分也抽出。</p>
+
+<p>參考資料：<br />
+http://kevintsengtw.blogspot.tw/2015/04/aspnet-mvc-twmvc18.html</p>
+
+<p><a href="https://github.com/royshow0316/MVC7" target="_blank">程式碼已放上Github</a></p>
+
+
+  </div>
+
+</article>
+
+          </div>
+      </main>
+      <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <!--<h2 class="footer-heading">八蛋的程式派對</h2>-->
+    <p></p>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1" align="center">
+        <ul class="contact-list">
+          <!-- <li>八蛋的程式派對</li> -->
+          <li>聯絡我</li>
+          <li><a href="mailto:royshow0316@gmail.com">royshow0316@gmail.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-2" align="center">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/royshow0316"><span class="icon icon--github"><svg viewBox="0 0 16 16"><path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/></svg>
+</span><span class="username">royshow0316</span></a>
+
+          </li>
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3" align="center">
+        <!-- <p>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.
+</p> -->
+        <p>Powered by <a href="https://jekyllrb.com/" target="_blank">Jekyll</a>
+        ,  Hosted by <a href="https://github.com/" target="_blank">Github</a>
+        </p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+    </div>
+  </body>
+
+</html>

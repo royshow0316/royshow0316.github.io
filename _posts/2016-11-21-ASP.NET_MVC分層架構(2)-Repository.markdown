@@ -54,13 +54,13 @@ public ActionResult Delete(Guid id){
 
 ## 建立Repository
 先建立Repository類別的介面，建立介面是為了避免依賴Repository類別，之後在Controller只要用介面來進行資料操作，不需要直接使用Repository類別。
-在專案中的Model目錄下建立Interface目錄，並新增一個IStructrueRepository。
-IStructrueRepository.cs
+在專案中的Model目錄下建立Interface目錄，並新增一個IStructrueRepository。  
+<font color="red">IStructureRepository.cs</font>  
 {% highlight C# %}
 namespace MVC.Models.Interface{    public interface IStructureRepository : IDisposable    {        void Create(Project instance);        void Update(Project instance);        void Delete(Project instance);        Project Get(Guid projectId);        IQueryable<Project> GetAll();        void SaveChanges();    }}
 {% endhighlight %}
-建立Repository類別，並實作剛剛建立的Interface，最後還要實作IDisposable介面，讓資料操作後可以釋放資源。
-StructrueRepository.cs
+建立Repository類別，並實作剛剛建立的Interface，最後還要實作IDisposable介面，讓資料操作後可以釋放資源。  
+<font color="red">StructureRepository.cs</font>  
 {% highlight C# %}
 namespace MVC.Models.Repository{    public class StructureRepository : IStructureRepository, IDisposable    {        protected ApplicationDbContext Context        {            get;            private set;        }        public StructureRepository()        {            this.Context = new ApplicationDbContext();        }        public void Create(Structure instance)        {            if (instance == null)            {                throw new ArgumentNullException("instance");            }            else            {                Context.Structure.Add(instance);                this.SaveChanges();            }        }        public void Update(Structure instance)        {            if (instance == null)            {                throw new ArgumentNullException("instance");            }            else            {                Context.Entry(instance).State = EntityState.Modified;                this.SaveChanges();            }        }        public void Delete(Structure instance)        {            if (instance == null)            {                throw new ArgumentNullException("instance");            }            else            {                Context.Entry(instance).State = EntityState.Deleted;                this.SaveChanges();            }        }        public Structure Get(Guid id)        {            return Context.Structure.FirstOrDefault(x => x.Id == id);        }        public IQueryable<Structure> GetAll()        {            return Context.Structure.OrderBy(x => x.Id);        }        public void SaveChanges()        {            this.Context.SaveChanges();        }        public void Dispose()        {            this.Dispose(true);            GC.SuppressFinalize(this);        }        protected virtual void Dispose(bool disposing)        {            if (disposing)            {                if (this.Context != null)                {                    this.Context.Dispose();                    this.Context = null;                }            }        }    }}
 {% endhighlight %}

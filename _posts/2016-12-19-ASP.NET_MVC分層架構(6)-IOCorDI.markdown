@@ -13,7 +13,7 @@ IOC的全名是Inversion of Control，中文是控制反轉；DI的全名是Depe
 
 ## 導入IOC/DI
 前面幾篇的程式碼還是直接依賴於實作的類別，但之前我們有建立介面，也就保持了點彈性，不同資料庫的資料存取，程式就會依照介面所設計的內容來實作，那麼系統日後假如要更換資料庫時就不需要重新改寫程式，不過這樣無法讓程式知道更換了不同的實作程式。這時候就可以導入IOC/DI Framework來解決這部分的問題。在Visual Studio的Nuget上可以找到並且已經整合好給ASP.NET MVC專案使用的組件，這次我們要用的是"Unity"版本是v4.0.1，如下圖：  
-![Nuget](/image/ASP.NET_MVC(6)_IOCorDI/Nuget.png){:class="img-responsive" height="500px" width="500px"}  
+![Nuget](/image/ASP.NET_MVC(6)_IOCorDI/Nuget.png){:class="img-responsive" height="400px" width="500px"}  
 在Web專案上選擇"管理Nuget套件"，並輸入unity搜尋後下載前兩個導入就好了，如下圖：  
 ![NugetInstall](/image/ASP.NET_MVC(6)_IOCorDI/NugetInstall.png){:class="img-responsive" height="300px" width="700px"}  
 安裝完成之後會在Web專案的App_Start目錄下新增UnityConfig.cs和UnityMvcActivator.cs兩個檔案，如下圖：  
@@ -47,11 +47,12 @@ public static void RegisterTypes(IUnityContainer container){	#region Repositor
 
 ## 建立Db工廠
 到這裡會發現在SQL Server Management Studio(SSMS)修改完資料之後回到網頁，發現網頁並沒有顯示修改的資料，其實問題在於RegisterTypes這個方法是static的，因為在靜態方法裡所建立的DbContext實例都將會維持同一個，直到該Application結束，程式執行中的DbContext並不會去讀取資料庫的資料，而是讀取在記憶體裡DbContext的資料。我們可以另外建立一個類別與方法來做DbContext實例，然後再RegisterType裡註冊，先來建立工廠介面，程式如下：  
-IDbContextFactory
+<font color="red">IDbContextFactory.cs</font>  
 {% highlight C# %}
 public interface IDbContextFactory{	ApplicationDbContext GetDbContext();}
 {% endhighlight %}  
 再來實作介面，建立工廠實作：  
+<font color="red">DbContextFactory.cs</font>  
 {% highlight C# %}
 public class DbContextFactory : IDbContextFactory{	private ApplicationDbContext dbContext;
 
